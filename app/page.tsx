@@ -11,12 +11,10 @@ export default function Home() {
           Lari first, level up later
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-          <Link href="/login" className="pixel-btn pixel-btn-primary">
+          <Link href="/login" className="pixel-btn pixel-btn-accent">
             START RUNNING
           </Link>
-          <Link href="/dashboard" className="pixel-btn pixel-btn-accent">
-            VIEW STATS
-          </Link>
+
         </div>
       </div>
       <footer className="mt-12 text-muted-foreground/60 pixel-font text-xs">
