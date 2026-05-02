@@ -1,0 +1,49 @@
+.dashboard-layout {
+  width: 98%;
+  max-width: 120rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: var(--font-pixel);
+}
+
+.dashboard-subtitle {
+  color: var(--muted-foreground);
+}
+
+.rank-badge {
+  padding: 0.5rem 1rem;
+  background-color: var(--accent);
+  border-radius: 9999px;
+  color: var(--accent-foreground);
+  font-weight: 700;
+  border-width: 2px;
+  border-color: color-mix(in srgb, var(--accent-foreground), transparent 80%);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
