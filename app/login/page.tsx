@@ -46,12 +46,12 @@ export default function LoginPage() {
       <h1 className="login-title">PROJEK LARI</h1>
       <div className={`login-card ${!isLogin ? "signup-mode" : ""}`}>
         <h2 className="card-title">
-          {isLogin ? "Welcome back, Hero!" : "Join the Quest!"}
+          {isLogin ? "Welcome back, Champion!" : "Join the Pack!"}
         </h2>
         <p className="card-desc">
           {isLogin
-            ? "Sign in to start your quest."
-            : "Create an account to track your runs."}
+            ? "Sign in to continue your journey."
+            : "Create an account to start your journey."}
         </p>
 
         <form onSubmit={handleAuth} className="input-stack">
