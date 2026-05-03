@@ -19,7 +19,7 @@ export default function Mascot() {
   const [isDragging, setIsDragging] = useState(false);
   const [message, setMessage] = useState("");
   const [isFlipped, setIsFlipped] = useState(false);
-  
+
   const requestRef = useRef<number>(null);
   const lastTimeRef = useRef<number>(null);
 
@@ -31,7 +31,7 @@ export default function Mascot() {
   const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
     setIsDragging(true);
     setVel({ x: 0, y: 0 });
-    setMessage("HEY! Put me down! 🐢");
+    setMessage("HEY! Put me down!");
   };
 
   useEffect(() => {
@@ -39,12 +39,12 @@ export default function Mascot() {
       if (!isDragging) return;
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-      
+
       setPos({
         x: clientX - 40,
         y: clientY - 40
       });
-      
+
       // Flip based on movement while dragging
       if (Math.abs(clientX - pos.x) > 1) {
         setIsFlipped(clientX < pos.x);
@@ -83,10 +83,10 @@ export default function Mascot() {
         if (newY >= GROUND_Y) {
           newY = GROUND_Y;
           newVelY = 0;
-          
+
           // Slow walking logic when on ground
           if (Math.abs(newVelX) < 0.1) {
-             newVelX = Math.random() > 0.5 ? 0.4 : -0.4;
+            newVelX = Math.random() > 0.5 ? 0.4 : -0.4;
           }
           newVelX *= FRICTION;
         }
