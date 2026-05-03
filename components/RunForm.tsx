@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { calculatePace } from "@/lib/utils";
 import "./RunForm.css";
 
-export default function RunForm() {
+export default function RunForm({ onRunSaved }: { onRunSaved?: () => void }) {
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +34,10 @@ export default function RunForm() {
 
       if (insertError) throw insertError;
 
-      // 3. Show success state
+      // 3. Trigger refresh in parent
+      if (onRunSaved) onRunSaved();
+
+      // 4. Show success state
       setSubmitted(true);
     } catch (err: any) {
       setError(err.message || "Failed to save run.");

@@ -12,7 +12,7 @@ interface Run {
   created_at: string;
 }
 
-export default function RunList() {
+export default function RunList({ refreshKey }: { refreshKey?: number }) {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +34,7 @@ export default function RunList() {
 
   useEffect(() => {
     fetchRuns();
-  }, []);
+  }, [refreshKey]);
 
   if (loading) {
     return <div className="run-list-container loading-state">FETCHING HISTORY...</div>;
