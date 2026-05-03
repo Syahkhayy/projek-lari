@@ -1,8 +1,18 @@
+"use client";
+
+import { useState } from "react";
 import RunForm from "@/components/RunForm";
 import RunList from "@/components/RunList";
+import Mascot from "@/components/Mascot";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRunSaved = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <div className="dashboard-layout">
       <header className="dashboard-header">
@@ -14,9 +24,11 @@ export default function DashboardPage() {
       </header>
 
       <div className="dashboard-grid">
-        <RunForm />
-        <RunList />
+        <RunForm onRunSaved={handleRunSaved} />
+        <RunList refreshKey={refreshKey} />
       </div>
+
+      <Mascot />
     </div>
   );
 }
