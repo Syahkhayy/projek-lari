@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { APP_VERSION, FOOTER_TEXT } from "@/lib/constants";
 import "./stylesheet.css";
 
 export default function LoginPage() {
@@ -31,10 +32,16 @@ export default function LoginPage() {
           password,
         });
         if (error) throw error;
-        alert("Check your email for the confirmation link!");
+        // Redirect to the verification pending page with email param
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
       }
       router.push("/dashboard");
     } catch (error: any) {
+      if (error.message?.includes("Email not confirmed")) {
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setErrorMsg(error.message || "An error occurred during authentication.");
     } finally {
       setLoading(false);
@@ -115,12 +122,17 @@ export default function LoginPage() {
             onClick={() => {
               setIsLogin(!isLogin);
               setErrorMsg("");
+              setEmail("");
+              setPassword("");
             }}
           >
             {isLogin ? "Sign Up" : "Login"}
           </span>
         </p>
       </div>
+      <footer className="login-footer">
+        {APP_VERSION} | {FOOTER_TEXT}
+      </footer>
     </div>
   );
 }
