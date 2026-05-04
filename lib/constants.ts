@@ -1,4 +1,4 @@
-export const APP_VERSION = "v0.0.2-Omega";
+export const APP_VERSION = "v0.0.3 Pre-Alpha";
 export const FOOTER_TEXT = "Built for Champions";
 
 // ─── Pace System Constants ───
