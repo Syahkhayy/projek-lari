@@ -227,3 +227,11 @@
     font-size: 1.5rem;
   }
 }
+
+.login-footer {
+  margin-top: 2rem;
+  color: color-mix(in srgb, var(--muted-foreground), transparent 40%);
+  font-family: var(--font-pixel);
+  font-size: 0.75rem;
+  text-align: center;
+}
