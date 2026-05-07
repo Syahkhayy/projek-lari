@@ -51,6 +51,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <h1 className="login-title">PROJEK LARI</h1>
+
       <div className={`login-card ${!isLogin ? "signup-mode" : ""}`}>
         <h2 className="card-title">
           {isLogin ? "Welcome back, Champion!" : "Join the Pack!"}
@@ -130,6 +131,7 @@ export default function LoginPage() {
           </span>
         </p>
       </div>
+
       <footer className="login-footer">
         {APP_VERSION} | {FOOTER_TEXT}
       </footer>

@@ -1,38 +1,58 @@
+/* ═══════════════════════════════════════
+   Login Page — Nusantara Village
+   ═══════════════════════════════════════ */
+
 .login-page {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: 1.5rem;
-  gap: 2rem;
-  background-color: var(--background);
+
+  /* Full-bleed background image — same as home */
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.65)),
+    url('/homepage.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  padding: 2rem;
 }
 
-.login-title {
-  font-size: clamp(1.75rem, 5vw, 2.5rem);
-  font-weight: 700;
-  color: var(--primary);
-  font-family: var(--font-pixel);
-  text-align: center;
-  letter-spacing: -0.05em;
-}
-
+/* ─── Card ─── */
 .login-card {
   width: 100%;
   max-width: 28rem;
-  padding: 2.5rem 2rem;
+  padding: clamp(2rem, 6vw, 3rem);
   background-color: var(--card);
   border: 4px solid var(--primary);
   border-radius: 1rem;
-  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.4s ease-out;
 }
 
+/* ─── Title above the card ─── */
+.login-title {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 900;
+  color: #fff;
+  font-family: var(--font-pixel);
+  text-align: center;
+  letter-spacing: -0.05em;
+  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), black 40%);
+  margin-bottom: 1.5rem;
+}
+
+/* ─── Card header ─── */
 .card-title {
   font-family: var(--font-pixel);
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 800;
+  color: var(--foreground);
   margin-bottom: 0.5rem;
   letter-spacing: -0.025em;
 }
@@ -42,9 +62,10 @@
   color: var(--muted-foreground);
   margin-bottom: 2rem;
   font-size: 0.6rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+/* ─── Form ─── */
 .input-stack {
   display: flex;
   flex-direction: column;
@@ -58,11 +79,12 @@
 }
 
 .input-group label {
-  font-size: 0.8125rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   color: var(--muted-foreground);
+  font-family: var(--font-pixel);
 }
 
 .form-input {
@@ -83,6 +105,7 @@
   transform: translateY(-1px);
 }
 
+/* ─── Password wrapper ─── */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -109,6 +132,7 @@
   color: var(--primary);
 }
 
+/* ─── Submit button ─── */
 .login-btn {
   font-family: var(--font-pixel);
   width: 100%;
@@ -118,29 +142,37 @@
   color: var(--primary-foreground);
   border: none;
   border-radius: 0.75rem;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 4px 0px 0px color-mix(in srgb, var(--primary), black 20%);
+  box-shadow: 0 4px 0px 0px color-mix(in srgb, var(--primary), black 25%);
 }
 
 .login-btn:hover {
-  opacity: 0.95;
-  transform: translateY(-1px);
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0px 0px color-mix(in srgb, var(--primary), black 25%);
 }
 
 .login-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0px 0px color-mix(in srgb, var(--primary), black 20%);
+  box-shadow: 0 1px 0px 0px color-mix(in srgb, var(--primary), black 25%);
 }
 
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── Toggle ─── */
 .toggle-text {
-  margin-top: 2rem;
-  font-size: 0.875rem;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
   text-align: center;
   color: var(--muted-foreground);
 }
@@ -150,26 +182,28 @@
   font-weight: 800;
   cursor: pointer;
   margin-left: 0.5rem;
-  text-decoration: underline decoration-transparent underline-offset-4;
+  text-decoration: underline;
+  text-underline-offset: 4px;
   transition: all 0.2s;
 }
 
 .toggle-link:hover {
-  color: var(--primary-dark);
+  opacity: 0.8;
 }
 
+/* ─── Error ─── */
 .error-message {
   padding: 0.75rem;
-  background-color: #fee2e2;
-  border: 1px solid #ef4444;
-  color: #b91c1c;
+  background-color: var(--destructive-bg);
+  border: 2px solid var(--destructive-border);
+  color: var(--destructive);
   border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-align: left;
+  font-size: 0.65rem;
+  font-family: var(--font-pixel);
+  line-height: 1.6;
 }
 
-/* Signup Mode Overrides (Accent/Gold Theme) */
+/* ─── Signup mode overrides ─── */
 .login-card.signup-mode {
   border-color: var(--accent);
 }
@@ -182,11 +216,15 @@
 .signup-mode .login-btn {
   background-color: var(--accent);
   color: var(--accent-foreground);
-  box-shadow: 0 4px 0px 0px color-mix(in srgb, var(--accent), black 20%);
+  box-shadow: 0 4px 0px 0px color-mix(in srgb, var(--accent), black 25%);
+}
+
+.signup-mode .login-btn:hover {
+  box-shadow: 0 6px 0px 0px color-mix(in srgb, var(--accent), black 25%);
 }
 
 .signup-mode .login-btn:active {
-  box-shadow: 0 1px 0px 0px color-mix(in srgb, var(--accent), black 20%);
+  box-shadow: 0 1px 0px 0px color-mix(in srgb, var(--accent), black 25%);
 }
 
 .signup-mode .show-password-btn:hover {
@@ -197,41 +235,34 @@
   color: var(--accent);
 }
 
-.signup-mode .toggle-link:hover {
-  color: var(--accent-foreground);
+/* ─── Footer ─── */
+.login-footer {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-pixel);
+  font-size: 0.6rem;
 }
 
+/* ─── Animation ─── */
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+/* ─── Responsive ─── */
 @media (max-width: 480px) {
-  .login-page {
-    padding: 1rem;
-  }
-
   .login-card {
     padding: 2rem 1.25rem;
     border-width: 3px;
   }
-
-  .card-title {
-    font-size: 1.5rem;
-  }
-}
-
-.login-footer {
-  margin-top: 2rem;
-  color: color-mix(in srgb, var(--muted-foreground), transparent 40%);
-  font-family: var(--font-pixel);
-  font-size: 0.75rem;
-  text-align: center;
 }

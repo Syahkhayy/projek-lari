@@ -56,10 +56,11 @@ export default function DashboardPage() {
 
       if (lastRun && lastRun.length > 0) {
         const daysPassed = daysSince(lastRun[0].created_at);
-        
-        if (daysPassed > 0) {
+
+        // Only decay after 3 days of no running
+        if (daysPassed > 2) {
           const decayedPace = applyDecay(profile.current_kura_pace, daysPassed);
-          
+
           // If pace changed, update the DB
           if (decayedPace !== profile.current_kura_pace) {
             await supabase
@@ -88,7 +89,7 @@ export default function DashboardPage() {
     if (!confirm("Ready to rest for a while? Kura will miss you!")) return;
 
     setIsLoggingOut(true);
-    
+
     // Brief delay to show the "See you" message
     setTimeout(async () => {
       await supabase.auth.signOut();
@@ -128,7 +129,7 @@ export default function DashboardPage() {
         {/* ─── Header ─── */}
         <header className="dashboard-header">
           <div className="header-info">
-            <h1 className="dashboard-title">KURA</h1>
+            <h1 className="dashboard-title">TRAINING GROUND</h1>
             <p className="dashboard-subtitle">{statusMessage}</p>
           </div>
           <button onClick={handleLogout} className="pixel-btn logout-btn">
@@ -141,8 +142,10 @@ export default function DashboardPage() {
           {/* ─── Pace Card ─── */}
           <section className="pace-card pixel-card">
             <div className="pace-label">KURA CURRENT PACE</div>
-            <div className="pace-value">{paceDisplay}</div>
-            <div className="pace-unit">min/km</div>
+            <div className="pace-main-display">
+              <div className="pace-value">{paceDisplay}</div>
+              <div className="pace-unit">min/km</div>
+            </div>
 
             {/* ─── Progress Bar ─── */}
             <div className="progress-container">
@@ -164,9 +167,9 @@ export default function DashboardPage() {
 
           {/* ─── Action Area (Step 2) ─── */}
           <section className="action-area">
-            <LogRun 
-              currentKuraPace={currentPace} 
-              onLogSuccess={handleLogSuccess} 
+            <LogRun
+              currentKuraPace={currentPace}
+              onLogSuccess={handleLogSuccess}
               refreshKey={refreshKey}
             />
           </section>
@@ -175,12 +178,12 @@ export default function DashboardPage() {
         <Mascot />
 
         {/* ─── Training History ─── */}
-        <RunList 
-          refreshKey={refreshKey} 
+        <RunList
+          refreshKey={refreshKey}
           onPaceUpdate={(newPace) => {
             setCurrentPace(newPace);
             setRefreshKey(prev => prev + 1);
-          }} 
+          }}
         />
       </div>
     </div>

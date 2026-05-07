@@ -36,13 +36,13 @@ export function improvePace(currentPace: number): number {
 // Called when loading the dashboard.
 // Calculates how many days Kura has been inactive and adds decay.
 export function applyDecay(currentPace: number, daysSinceLastRun: number): number {
-  if (daysSinceLastRun <= 0) return currentPace; // Ran today, no decay
+  if (daysSinceLastRun <= 2) return currentPace; // no decay
 
   let decay = 0;
 
-  if (daysSinceLastRun <= 2) {
+  if (daysSinceLastRun <= 4) {
     decay = DECAY_SMALL * daysSinceLastRun;
-  } else if (daysSinceLastRun <= 4) {
+  } else if (daysSinceLastRun <= 7) {
     decay = DECAY_MODERATE * daysSinceLastRun;
   } else {
     decay = DECAY_HEAVY * daysSinceLastRun;

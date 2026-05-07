@@ -23,9 +23,10 @@ export default function LogRun({ currentKuraPace, onLogSuccess, refreshKey }: Lo
 
   useEffect(() => {
     setIsSuccess(false); // Reset success state on refresh
-    checkTodayLog();
+    //checkTodayLog();
   }, [refreshKey]);
 
+  /*
   const checkTodayLog = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -46,7 +47,7 @@ export default function LogRun({ currentKuraPace, onLogSuccess, refreshKey }: Lo
       setHasLoggedToday(false); // Make sure to reset if no log found
     }
   };
-
+*/
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

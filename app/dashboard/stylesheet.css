@@ -81,7 +81,7 @@
 }
 
 .dashboard-title {
-  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-size: clamp(2rem, 8vw, 3rem);
   font-weight: 900;
   color: var(--primary);
   font-family: var(--font-pixel);
@@ -119,35 +119,52 @@
   padding: clamp(2rem, 5vw, 3.5rem);
   background-color: var(--card);
   box-shadow: 8px 8px 0px 0px color-mix(in srgb, var(--primary), transparent 90%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .pace-label {
   font-family: var(--font-pixel);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--muted-foreground);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+}
+
+.pace-main-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 3rem;
 }
 
 .pace-value {
   font-family: var(--font-pixel);
-  font-size: clamp(3rem, 10vw, 5rem);
+  font-size: clamp(3.5rem, 12vw, 6.5rem);
   font-weight: 800;
   color: var(--primary);
-  line-height: 1;
+  line-height: 0.9;
 }
 
 .pace-unit {
   font-family: var(--font-pixel);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--muted-foreground);
-  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
 }
 
 /* ─── Progress Bar ─── */
 .progress-container {
   width: 100%;
-  max-width: 20rem;
+  max-width: 32rem;
+  /* Increased for better coverage while maintaining focus */
+  margin: 0 auto;
 }
 
 .progress-labels {
@@ -163,21 +180,58 @@
 
 .progress-track {
   width: 100%;
-  height: 1.25rem;
+  height: 1.5rem;
   background-color: var(--muted);
-  border: 3px solid var(--border);
-  border-radius: 0.5rem;
+  border: 4px solid var(--primary);
+  border-radius: 0;
+  /* Square for a cleaner pixel aesthetic */
   overflow: hidden;
   position: relative;
+  box-shadow: inset 4px 4px 0px 0px rgba(0, 0, 0, 0.05);
 }
 
 .progress-fill {
   height: 100%;
   width: var(--progress, 0%);
-  background-color: var(--primary);
-  border-radius: 0.25rem;
-  transition: width 0.6s ease-out;
+  background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary), white 20%));
+  transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent);
+  animation: progress-shimmer 2s infinite linear;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progress-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 6px;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .progress-percent {
@@ -190,11 +244,15 @@
 
 .pace-disclaimer {
   font-family: var(--font-pixel);
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   color: var(--muted-foreground);
-  margin-top: 1.25rem;
+  margin-top: 2rem;
   text-align: center;
-  opacity: 0.7;
+  opacity: 0.6;
+  letter-spacing: 0.05em;
+  background: var(--muted);
+  padding: 0.4rem 0.8rem;
+  display: inline-block;
 }
 
 /* ─── Action Area (Step 2) ─── */

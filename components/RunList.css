@@ -93,6 +93,18 @@
   transform: scale(1.2);
 }
 
+.delete-btn:disabled {
+  opacity: 0.15;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.delete-btn:disabled:hover {
+  color: var(--muted-foreground);
+  transform: none;
+  opacity: 0.15;
+}
+
 .h-stat {
   display: flex;
   flex-direction: column;

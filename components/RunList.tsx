@@ -90,7 +90,8 @@ export default function RunList({ refreshKey, onPaceUpdate }: RunListProps) {
         </div>
       ) : (
         <div className="history-stack">
-          {runs.map((run) => {
+          {runs.map((run, index) => {
+            const isLatest = index === 0;
             const date = new Date(run.created_at).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -102,6 +103,21 @@ export default function RunList({ refreshKey, onPaceUpdate }: RunListProps) {
             const userPaceSecs = Math.round((userPaceRaw - userPaceMins) * 60);
             const userPaceFormatted = `${userPaceMins}:${userPaceSecs.toString().padStart(2, '0')}`;
 
+            // Calculate Time in hour (if exceed 60)
+            let timeFormatted;
+
+            if (run.time >= 60) {
+              const hours = Math.floor(run.time / 60);
+              const minutes = run.time % 60;
+
+              timeFormatted =
+                minutes > 0
+                  ? `${hours}h ${minutes}min`
+                  : `${hours}h`;
+            } else {
+              timeFormatted = `${run.time}min`;
+            }
+
             return (
               <div key={run.id} className="history-card pixel-card">
                 <div className="history-main">
@@ -111,18 +127,19 @@ export default function RunList({ refreshKey, onPaceUpdate }: RunListProps) {
 
                 <div className="history-stats">
                   <div className="h-stat">
-                    <span className="h-label">YOUR PACE</span>
-                    <span className="h-value">{userPaceFormatted}</span>
+                    <span className="h-label">TIME</span>
+                    <span className="h-value">{timeFormatted}</span>
                   </div>
                   <div className="h-stat">
-                    <span className="h-label">TIME</span>
-                    <span className="h-value">{run.time}m</span>
+                    <span className="h-label">YOUR PACE</span>
+                    <span className="h-value">{userPaceFormatted}</span>
                   </div>
 
                   <button
                     onClick={() => handleDelete(run)}
                     className="delete-btn"
-                    title="Delete Run"
+                    title={isLatest ? "Delete Run" : "Delete the latest run first"}
+                    disabled={!isLatest}
                   >
                     ×
                   </button>
