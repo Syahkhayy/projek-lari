@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { APP_VERSION, FOOTER_TEXT } from "@/lib/constants";
 import "./home.css";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <footer className="home-footer">
         {APP_VERSION} | {FOOTER_TEXT}
       </footer>
+      <SpeedInsights />
     </main>
   );
 }

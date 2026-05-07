@@ -50,7 +50,7 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <h1 className="login-title">PROJEK LARI</h1>
+      <h1 className="login-title">PROJEK KURA</h1>
 
       <div className={`login-card ${!isLogin ? "signup-mode" : ""}`}>
         <h2 className="card-title">
