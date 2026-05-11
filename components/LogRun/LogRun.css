@@ -1,7 +1,7 @@
 .log-run-card {
   width: 100%;
-  padding: 2rem;
   height: 100%;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -13,7 +13,6 @@
   background-color: var(--muted);
   border-radius: 1rem;
   text-align: center;
-  padding: 3rem 2rem;
 }
 
 .log-run-card.success {
@@ -21,7 +20,6 @@
   background-color: color-mix(in srgb, var(--primary), transparent 95%);
   border-radius: 1rem;
   text-align: center;
-  padding: 3rem 2rem;
 }
 
 .log-title {
@@ -41,7 +39,7 @@
 .log-inputs-row {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 @media (max-width: 500px) {

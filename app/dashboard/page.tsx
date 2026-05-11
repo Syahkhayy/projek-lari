@@ -2,20 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { PACE_DEFAULT } from "@/lib/constants";
+import { ENDURANCE_DEFAULT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
-import { formatPace, getPaceProgress, getStatusMessage, daysSince, applyDecay } from "@/lib/pace";
-import Mascot from "@/components/Mascot";
-import LogRun from "@/components/LogRun";
-import RunList from "@/components/RunList";
+import { formatEndurance, getEnduranceProgress, daysSince, applyDecay } from "@/lib/endurance";
+import { getMood, getNarrativeStatus } from "@/lib/mood";
+import Mascot from "@/components/Mascot/Mascot";
+import LogRun from "@/components/LogRun/LogRun";
+import RunList from "@/components/RunList/RunList";
+import OnboardingModal from "@/components/OnboardingModal/OnboardingModal";
+import ComicModal from "@/components/ComicModal/ComicModal";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [currentPace, setCurrentPace] = useState(PACE_DEFAULT);
+  const [currentEndurance, setCurrentEndurance] = useState(ENDURANCE_DEFAULT);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [daysSinceLastRun, setDaysSinceLastRun] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showComic, setShowComic] = useState(false);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -26,10 +33,10 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // 1. Fetch current pace from profile
+      // 1. Fetch current endurance and onboarding status from profile
       let { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("current_kura_pace")
+        .select("kura_endurance, has_seen_onboarding")
         .eq("id", user.id)
         .single();
 
@@ -37,16 +44,22 @@ export default function DashboardPage() {
       if (profileError && profileError.code === "PGRST116") {
         const { data: newProfile } = await supabase
           .from("profiles")
-          .insert({ id: user.id, current_kura_pace: PACE_DEFAULT })
+          .insert({ id: user.id, kura_endurance: ENDURANCE_DEFAULT })
           .select().single();
         profile = newProfile;
       }
 
       if (!profile) return;
 
-      let finalPace = profile.current_kura_pace;
+      if (!profile.has_seen_onboarding) {
+        setShowComic(true);
+      } else {
+        setHasSeenOnboarding(true);
+      }
 
-      // 2. Check for Decay (Step 4 Logic)
+      let finalEndurance = profile.kura_endurance;
+
+      // 2. Check for Decay
       const { data: lastRun } = await supabase
         .from("runs")
         .select("created_at")
@@ -56,23 +69,24 @@ export default function DashboardPage() {
 
       if (lastRun && lastRun.length > 0) {
         const daysPassed = daysSince(lastRun[0].created_at);
+        setDaysSinceLastRun(daysPassed);
 
         // Only decay after 3 days of no running
         if (daysPassed > 2) {
-          const decayedPace = applyDecay(profile.current_kura_pace, daysPassed);
+          const decayedEndurance = applyDecay(profile.kura_endurance, daysPassed);
 
-          // If pace changed, update the DB
-          if (decayedPace !== profile.current_kura_pace) {
+          // If endurance changed, update the DB
+          if (decayedEndurance !== profile.kura_endurance) {
             await supabase
               .from("profiles")
-              .update({ current_kura_pace: decayedPace })
+              .update({ kura_endurance: decayedEndurance })
               .eq("id", user.id);
-            finalPace = decayedPace;
+            finalEndurance = decayedEndurance;
           }
         }
       }
 
-      setCurrentPace(finalPace);
+      setCurrentEndurance(finalEndurance);
     } catch (err) {
       console.error("Error fetching user data:", err);
     } finally {
@@ -80,8 +94,8 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogSuccess = (newPace: number) => {
-    setCurrentPace(newPace);
+  const handleLogSuccess = (newEndurance: number) => {
+    setCurrentEndurance(newEndurance);
     setRefreshKey(prev => prev + 1); // Trigger RunList refresh
   };
 
@@ -95,6 +109,28 @@ export default function DashboardPage() {
       await supabase.auth.signOut();
       router.push("/login");
     }, 1500);
+  };
+
+  const handleCloseComic = () => {
+    setShowComic(false);
+    // After comic ends for first-timer, show guide
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  };
+
+  const handleCloseOnboarding = async () => {
+    setShowOnboarding(false);
+    if (!hasSeenOnboarding) {
+      setHasSeenOnboarding(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("profiles")
+          .update({ has_seen_onboarding: true })
+          .eq("id", user.id);
+      }
+    }
   };
 
   if (isLoggingOut) {
@@ -111,17 +147,24 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="dashboard-layout">
-        <p className="pixel-font" style={{ textAlign: 'center', marginTop: '4rem' }}>
-          FINDING KURA...
-        </p>
+        <div className="dashboard-inner skeleton-loading">
+          <header className="dashboard-header skeleton-header">
+            <div className="skeleton-title"></div>
+          </header>
+          <div className="dashboard-content">
+            <div className="endurance-card pixel-card skeleton-card"></div>
+            <div className="action-area skeleton-card"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // Derived values from the pace engine
-  const paceDisplay = formatPace(currentPace);
-  const progress = getPaceProgress(currentPace);
-  const statusMessage = getStatusMessage(currentPace);
+  // Derived values from the endurance engine
+  const enduranceDisplay = formatEndurance(currentEndurance);
+  const progress = getEnduranceProgress(currentEndurance);
+  const statusMessage = getNarrativeStatus(currentEndurance, daysSinceLastRun);
+  const mood = getMood(currentEndurance);
 
   return (
     <div className="dashboard-layout">
@@ -130,28 +173,46 @@ export default function DashboardPage() {
         <header className="dashboard-header">
           <div className="header-info">
             <h1 className="dashboard-title">TRAINING GROUND</h1>
-            <p className="dashboard-subtitle">{statusMessage}</p>
+            <div className="monologue-cloud">
+              <span className="mood-tag">{mood.label}</span>
+              <p className="kura-speech">"{statusMessage}"</p>
+            </div>
           </div>
-          <button onClick={handleLogout} className="pixel-btn logout-btn">
-            LOGOUT
-          </button>
+          <div className="header-actions">
+            <button
+              onClick={() => setShowComic(true)}
+              className="pixel-btn story-btn"
+              title="Kura's Story"
+            >
+              📖
+            </button>
+            <button
+              onClick={() => setShowOnboarding(true)}
+              className="pixel-btn info-btn"
+              title="How it works"
+            >
+              ?
+            </button>
+            <button onClick={handleLogout} className="pixel-btn logout-btn">
+              LOGOUT
+            </button>
+          </div>
         </header>
 
-        {/* ─── Dashboard Content ─── */}
         <div className="dashboard-content">
-          {/* ─── Pace Card ─── */}
-          <section className="pace-card pixel-card">
-            <div className="pace-label">KURA CURRENT PACE</div>
-            <div className="pace-main-display">
-              <div className="pace-value">{paceDisplay}</div>
-              <div className="pace-unit">min/km</div>
+          {/* ─── Left: Progress ─── */}
+          <section className="endurance-card pixel-card">
+            <div className="endurance-label">KURA ENDURANCE</div>
+            <div className="endurance-main-display">
+              <div className="endurance-value">{enduranceDisplay}</div>
+              <div className="endurance-unit">km</div>
             </div>
 
             {/* ─── Progress Bar ─── */}
             <div className="progress-container">
               <div className="progress-labels">
-                <span className="progress-label-slow">Slow</span>
-                <span className="progress-label-fast">Fast</span>
+                <span className="progress-label-slow">Weak</span>
+                <span className="progress-label-fast">Strong</span>
               </div>
               <div className="progress-track">
                 <div
@@ -160,30 +221,39 @@ export default function DashboardPage() {
                 ></div>
               </div>
               <div className="progress-percent">{progress}%</div>
-
-              <div className="pace-disclaimer">THIS IS KURA'S PACE, NOT YOUR'S</div>
+              <div className="endurance-disclaimer">THIS IS KURA'S ENDURANCE, NOT YOURS</div>
             </div>
           </section>
 
-          {/* ─── Action Area (Step 2) ─── */}
+          {/* ─── Right: Actions ─── */}
           <section className="action-area">
             <LogRun
-              currentKuraPace={currentPace}
+              currentEndurance={currentEndurance}
               onLogSuccess={handleLogSuccess}
               refreshKey={refreshKey}
             />
           </section>
         </div>
 
-        <Mascot />
-
-        {/* ─── Training History ─── */}
+        {/* ─── Training History (Full Width) ─── */}
         <RunList
           refreshKey={refreshKey}
-          onPaceUpdate={(newPace) => {
-            setCurrentPace(newPace);
+          onEnduranceUpdate={(newEndurance) => {
+            setCurrentEndurance(newEndurance);
             setRefreshKey(prev => prev + 1);
           }}
+        />
+
+        <Mascot endurance={currentEndurance} daysSinceLastRun={daysSinceLastRun} />
+
+        <ComicModal 
+          isOpen={showComic}
+          onClose={handleCloseComic}
+        />
+
+        <OnboardingModal
+          isOpen={showOnboarding}
+          onClose={handleCloseOnboarding}
         />
       </div>
     </div>

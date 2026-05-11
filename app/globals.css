@@ -79,12 +79,12 @@ body {
 }
 
 .pixel-card {
-  background-color: color-mix(in srgb, var(--background), transparent 20%);
-  backdrop-filter: blur(4px);
+  background-color: color-mix(in srgb, var(--card), transparent 10%);
+  backdrop-filter: blur(8px);
   border-width: 4px;
   border-color: var(--primary);
-  border-radius: 1rem;
-  box-shadow: 12px 12px 0px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 0; /* Pure pixel style */
+  box-shadow: 12px 12px 0px 0px rgba(0, 0, 0, 0.2);
 }
 
 .pixel-btn {
@@ -93,6 +93,7 @@ body {
   border-radius: 0.5rem;
   transition: all 0.2s;
   font-family: var(--font-pixel);
+  cursor: pointer;
 }
 
 .pixel-btn:hover {
