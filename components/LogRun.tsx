@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { PACE_IMPROVEMENT, PACE_BEST, MIN_DISTANCE_KM } from "@/lib/constants";
-import { improvePace } from "@/lib/pace";
+import { MIN_DISTANCE_KM } from "@/lib/constants";
+import { improveEndurance } from "@/lib/endurance";
 import "./LogRun.css";
 
 interface LogRunProps {
-  currentKuraPace: number;
-  onLogSuccess: (newKuraPace: number) => void;
+  currentEndurance: number;
+  onLogSuccess: (newEndurance: number) => void;
   refreshKey?: number;
 }
 
-export default function LogRun({ currentKuraPace, onLogSuccess, refreshKey }: LogRunProps) {
+export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: LogRunProps) {
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState(""); // User's actual time
   const [error, setError] = useState("");
@@ -73,15 +73,15 @@ export default function LogRun({ currentKuraPace, onLogSuccess, refreshKey }: Lo
         user_id: user.id,
         distance: distNum,
         time: timeNum,
-        kura_pace_snapshot: currentKuraPace // Store Kura's pace BEFORE this run
+        kura_endurance_snapshot: currentEndurance // Store Kura's endurance BEFORE this run
       });
       if (runError) throw runError;
 
-      // 3. Update Kura's Current Pace
-      const newKuraPace = improvePace(currentKuraPace);
+      // 3. Update Kura's Current Endurance
+      const newEndurance = improveEndurance(currentEndurance);
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ current_kura_pace: newKuraPace })
+        .update({ kura_endurance: newEndurance })
         .eq("id", user.id);
 
       if (profileError) throw profileError;
@@ -89,7 +89,7 @@ export default function LogRun({ currentKuraPace, onLogSuccess, refreshKey }: Lo
       // 4. Success
       setIsSuccess(true);
       setHasLoggedToday(true);
-      onLogSuccess(newKuraPace);
+      onLogSuccess(newEndurance);
     } catch (err: any) {
       setError(err.message || "Failed to log run.");
     } finally {
@@ -108,7 +108,7 @@ export default function LogRun({ currentKuraPace, onLogSuccess, refreshKey }: Lo
   if (isSuccess) {
     return (
       <div className="log-run-card success">
-        <p className="log-message">Great run! Kura's pace improved!</p>
+        <p className="log-message">Great run! Kura's endurance improved!</p>
       </div>
     );
   }

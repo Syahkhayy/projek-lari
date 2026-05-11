@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { PACE_DEFAULT } from "@/lib/constants";
+import { ENDURANCE_DEFAULT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
-import { formatPace, getPaceProgress, getStatusMessage, daysSince, applyDecay } from "@/lib/pace";
+import { formatEndurance, getEnduranceProgress, getStatusMessage, daysSince, applyDecay } from "@/lib/endurance";
 import Mascot from "@/components/Mascot";
 import LogRun from "@/components/LogRun";
 import RunList from "@/components/RunList";
@@ -12,7 +12,7 @@ import "./stylesheet.css";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [currentPace, setCurrentPace] = useState(PACE_DEFAULT);
+  const [currentEndurance, setCurrentEndurance] = useState(ENDURANCE_DEFAULT);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -26,10 +26,10 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // 1. Fetch current pace from profile
+      // 1. Fetch current endurance from profile
       let { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("current_kura_pace")
+        .select("kura_endurance")
         .eq("id", user.id)
         .single();
 
@@ -37,16 +37,16 @@ export default function DashboardPage() {
       if (profileError && profileError.code === "PGRST116") {
         const { data: newProfile } = await supabase
           .from("profiles")
-          .insert({ id: user.id, current_kura_pace: PACE_DEFAULT })
+          .insert({ id: user.id, kura_endurance: ENDURANCE_DEFAULT })
           .select().single();
         profile = newProfile;
       }
 
       if (!profile) return;
 
-      let finalPace = profile.current_kura_pace;
+      let finalEndurance = profile.kura_endurance;
 
-      // 2. Check for Decay (Step 4 Logic)
+      // 2. Check for Decay
       const { data: lastRun } = await supabase
         .from("runs")
         .select("created_at")
@@ -59,20 +59,20 @@ export default function DashboardPage() {
 
         // Only decay after 3 days of no running
         if (daysPassed > 2) {
-          const decayedPace = applyDecay(profile.current_kura_pace, daysPassed);
+          const decayedEndurance = applyDecay(profile.kura_endurance, daysPassed);
 
-          // If pace changed, update the DB
-          if (decayedPace !== profile.current_kura_pace) {
+          // If endurance changed, update the DB
+          if (decayedEndurance !== profile.kura_endurance) {
             await supabase
               .from("profiles")
-              .update({ current_kura_pace: decayedPace })
+              .update({ kura_endurance: decayedEndurance })
               .eq("id", user.id);
-            finalPace = decayedPace;
+            finalEndurance = decayedEndurance;
           }
         }
       }
 
-      setCurrentPace(finalPace);
+      setCurrentEndurance(finalEndurance);
     } catch (err) {
       console.error("Error fetching user data:", err);
     } finally {
@@ -80,8 +80,8 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogSuccess = (newPace: number) => {
-    setCurrentPace(newPace);
+  const handleLogSuccess = (newEndurance: number) => {
+    setCurrentEndurance(newEndurance);
     setRefreshKey(prev => prev + 1); // Trigger RunList refresh
   };
 
@@ -118,10 +118,10 @@ export default function DashboardPage() {
     );
   }
 
-  // Derived values from the pace engine
-  const paceDisplay = formatPace(currentPace);
-  const progress = getPaceProgress(currentPace);
-  const statusMessage = getStatusMessage(currentPace);
+  // Derived values from the endurance engine
+  const enduranceDisplay = formatEndurance(currentEndurance);
+  const progress = getEnduranceProgress(currentEndurance);
+  const statusMessage = getStatusMessage(currentEndurance);
 
   return (
     <div className="dashboard-layout">
@@ -139,19 +139,19 @@ export default function DashboardPage() {
 
         {/* ─── Dashboard Content ─── */}
         <div className="dashboard-content">
-          {/* ─── Pace Card ─── */}
-          <section className="pace-card pixel-card">
-            <div className="pace-label">KURA CURRENT PACE</div>
-            <div className="pace-main-display">
-              <div className="pace-value">{paceDisplay}</div>
-              <div className="pace-unit">min/km</div>
+          {/* ─── Endurance Card ─── */}
+          <section className="endurance-card pixel-card">
+            <div className="endurance-label">KURA ENDURANCE</div>
+            <div className="endurance-main-display">
+              <div className="endurance-value">{enduranceDisplay}</div>
+              <div className="endurance-unit">km</div>
             </div>
 
             {/* ─── Progress Bar ─── */}
             <div className="progress-container">
               <div className="progress-labels">
-                <span className="progress-label-slow">Slow</span>
-                <span className="progress-label-fast">Fast</span>
+                <span className="progress-label-slow">Weak</span>
+                <span className="progress-label-fast">Strong</span>
               </div>
               <div className="progress-track">
                 <div
@@ -161,14 +161,14 @@ export default function DashboardPage() {
               </div>
               <div className="progress-percent">{progress}%</div>
 
-              <div className="pace-disclaimer">THIS IS KURA'S PACE, NOT YOUR'S</div>
+              <div className="endurance-disclaimer">THIS IS KURA'S ENDURANCE, NOT YOURS</div>
             </div>
           </section>
 
-          {/* ─── Action Area (Step 2) ─── */}
+          {/* ─── Action Area ─── */}
           <section className="action-area">
             <LogRun
-              currentKuraPace={currentPace}
+              currentEndurance={currentEndurance}
               onLogSuccess={handleLogSuccess}
               refreshKey={refreshKey}
             />
@@ -180,8 +180,8 @@ export default function DashboardPage() {
         {/* ─── Training History ─── */}
         <RunList
           refreshKey={refreshKey}
-          onPaceUpdate={(newPace) => {
-            setCurrentPace(newPace);
+          onEnduranceUpdate={(newEndurance) => {
+            setCurrentEndurance(newEndurance);
             setRefreshKey(prev => prev + 1);
           }}
         />

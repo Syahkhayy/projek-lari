@@ -9,15 +9,15 @@ interface Run {
   distance: number;
   time: number;
   created_at: string;
-  kura_pace_snapshot?: number;
+  kura_endurance_snapshot?: number;
 }
 
 interface RunListProps {
   refreshKey?: number;
-  onPaceUpdate: (newKuraPace: number) => void;
+  onEnduranceUpdate: (newEndurance: number) => void;
 }
 
-export default function RunList({ refreshKey, onPaceUpdate }: RunListProps) {
+export default function RunList({ refreshKey, onEnduranceUpdate }: RunListProps) {
   const [runs, setRuns] = useState<Run[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,17 +56,17 @@ export default function RunList({ refreshKey, onPaceUpdate }: RunListProps) {
 
       if (deleteError) throw deleteError;
 
-      // 2. Revert Kura's Pace if a snapshot exists
-      if (run.kura_pace_snapshot) {
+      // 2. Revert Kura's Endurance if a snapshot exists
+      if (run.kura_endurance_snapshot) {
         const { error: profileError } = await supabase
           .from("profiles")
-          .update({ current_kura_pace: run.kura_pace_snapshot })
+          .update({ kura_endurance: run.kura_endurance_snapshot })
           .eq("id", user.id);
 
         if (profileError) throw profileError;
 
         // 3. Update the UI state
-        onPaceUpdate(run.kura_pace_snapshot);
+        onEnduranceUpdate(run.kura_endurance_snapshot);
       }
 
       fetchRuns(); // Refresh the history list

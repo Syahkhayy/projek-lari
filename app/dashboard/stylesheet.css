@@ -114,8 +114,8 @@
   }
 }
 
-/* ─── Pace Card ─── */
-.pace-card {
+/* ─── Endurance Card ─── */
+.endurance-card {
   padding: clamp(2rem, 5vw, 3.5rem);
   background-color: var(--card);
   box-shadow: 8px 8px 0px 0px color-mix(in srgb, var(--primary), transparent 90%);
@@ -126,7 +126,7 @@
   text-align: center;
 }
 
-.pace-label {
+.endurance-label {
   font-family: var(--font-pixel);
   font-size: 0.75rem;
   color: var(--muted-foreground);
@@ -135,14 +135,14 @@
   margin-bottom: 1rem;
 }
 
-.pace-main-display {
+.endurance-main-display {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 3rem;
 }
 
-.pace-value {
+.endurance-value {
   font-family: var(--font-pixel);
   font-size: clamp(3.5rem, 12vw, 6.5rem);
   font-weight: 800;
@@ -150,7 +150,7 @@
   line-height: 0.9;
 }
 
-.pace-unit {
+.endurance-unit {
   font-family: var(--font-pixel);
   font-size: 0.75rem;
   color: var(--muted-foreground);
@@ -242,7 +242,7 @@
   color: var(--muted-foreground);
 }
 
-.pace-disclaimer {
+.endurance-disclaimer {
   font-family: var(--font-pixel);
   font-size: 0.55rem;
   color: var(--muted-foreground);
