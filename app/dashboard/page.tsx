@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { ENDURANCE_DEFAULT } from "@/lib/constants";
 import { useRouter } from "next/navigation";
-import { formatEndurance, getEnduranceProgress, getStatusMessage, daysSince, applyDecay } from "@/lib/endurance";
-import Mascot from "@/components/Mascot";
-import LogRun from "@/components/LogRun";
-import RunList from "@/components/RunList";
+import { formatEndurance, getEnduranceProgress, daysSince, applyDecay } from "@/lib/endurance";
+import { getMood, getNarrativeStatus } from "@/lib/mood";
+import Mascot from "@/components/Mascot/Mascot";
+import LogRun from "@/components/LogRun/LogRun";
+import RunList from "@/components/RunList/RunList";
+import OnboardingModal from "@/components/OnboardingModal/OnboardingModal";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
@@ -16,6 +18,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [daysSinceLastRun, setDaysSinceLastRun] = useState(0);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -26,10 +31,10 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // 1. Fetch current endurance from profile
+      // 1. Fetch current endurance and onboarding status from profile
       let { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("kura_endurance")
+        .select("kura_endurance, has_seen_onboarding")
         .eq("id", user.id)
         .single();
 
@@ -44,6 +49,12 @@ export default function DashboardPage() {
 
       if (!profile) return;
 
+      if (!profile.has_seen_onboarding) {
+        setShowOnboarding(true);
+      } else {
+        setHasSeenOnboarding(true);
+      }
+
       let finalEndurance = profile.kura_endurance;
 
       // 2. Check for Decay
@@ -56,6 +67,7 @@ export default function DashboardPage() {
 
       if (lastRun && lastRun.length > 0) {
         const daysPassed = daysSince(lastRun[0].created_at);
+        setDaysSinceLastRun(daysPassed);
 
         // Only decay after 3 days of no running
         if (daysPassed > 2) {
@@ -97,6 +109,18 @@ export default function DashboardPage() {
     }, 1500);
   };
 
+  const handleCloseOnboarding = async () => {
+    setShowOnboarding(false);
+    setHasSeenOnboarding(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from("profiles")
+        .update({ has_seen_onboarding: true })
+        .eq("id", user.id);
+    }
+  };
+
   if (isLoggingOut) {
     return (
       <div className="dashboard-layout logout-screen">
@@ -111,9 +135,15 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="dashboard-layout">
-        <p className="pixel-font" style={{ textAlign: 'center', marginTop: '4rem' }}>
-          FINDING KURA...
-        </p>
+        <div className="dashboard-inner skeleton-loading">
+          <header className="dashboard-header skeleton-header">
+            <div className="skeleton-title"></div>
+          </header>
+          <div className="dashboard-content">
+            <div className="endurance-card pixel-card skeleton-card"></div>
+            <div className="action-area skeleton-card"></div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -121,7 +151,8 @@ export default function DashboardPage() {
   // Derived values from the endurance engine
   const enduranceDisplay = formatEndurance(currentEndurance);
   const progress = getEnduranceProgress(currentEndurance);
-  const statusMessage = getStatusMessage(currentEndurance);
+  const statusMessage = getNarrativeStatus(currentEndurance, daysSinceLastRun);
+  const mood = getMood(currentEndurance);
 
   return (
     <div className="dashboard-layout">
@@ -130,16 +161,27 @@ export default function DashboardPage() {
         <header className="dashboard-header">
           <div className="header-info">
             <h1 className="dashboard-title">TRAINING GROUND</h1>
-            <p className="dashboard-subtitle">{statusMessage}</p>
+            <div className="monologue-cloud">
+              <span className="mood-tag">{mood.label}</span>
+              <p className="kura-speech">"{statusMessage}"</p>
+            </div>
           </div>
-          <button onClick={handleLogout} className="pixel-btn logout-btn">
-            LOGOUT
-          </button>
+          <div className="header-actions">
+            <button
+              onClick={() => setShowOnboarding(true)}
+              className="pixel-btn info-btn"
+              title="How it works"
+            >
+              ?
+            </button>
+            <button onClick={handleLogout} className="pixel-btn logout-btn">
+              LOGOUT
+            </button>
+          </div>
         </header>
 
-        {/* ─── Dashboard Content ─── */}
         <div className="dashboard-content">
-          {/* ─── Endurance Card ─── */}
+          {/* ─── Left: Progress ─── */}
           <section className="endurance-card pixel-card">
             <div className="endurance-label">KURA ENDURANCE</div>
             <div className="endurance-main-display">
@@ -160,12 +202,11 @@ export default function DashboardPage() {
                 ></div>
               </div>
               <div className="progress-percent">{progress}%</div>
-
               <div className="endurance-disclaimer">THIS IS KURA'S ENDURANCE, NOT YOURS</div>
             </div>
           </section>
 
-          {/* ─── Action Area ─── */}
+          {/* ─── Right: Actions ─── */}
           <section className="action-area">
             <LogRun
               currentEndurance={currentEndurance}
@@ -175,15 +216,21 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <Mascot />
-
-        {/* ─── Training History ─── */}
+        {/* ─── Training History (Full Width) ─── */}
         <RunList
           refreshKey={refreshKey}
           onEnduranceUpdate={(newEndurance) => {
             setCurrentEndurance(newEndurance);
             setRefreshKey(prev => prev + 1);
           }}
+        />
+
+        <Mascot endurance={currentEndurance} daysSinceLastRun={daysSinceLastRun} />
+
+        <OnboardingModal
+          isOpen={showOnboarding}
+          onClose={handleCloseOnboarding}
+          hasSeenBefore={hasSeenOnboarding}
         />
       </div>
     </div>

@@ -131,7 +131,7 @@ export default function RunList({ refreshKey, onEnduranceUpdate }: RunListProps)
                     <span className="h-value">{timeFormatted}</span>
                   </div>
                   <div className="h-stat">
-                    <span className="h-label">YOUR PACE</span>
+                    <span className="h-label">PACE (min/km)</span>
                     <span className="h-value">{userPaceFormatted}</span>
                   </div>
 

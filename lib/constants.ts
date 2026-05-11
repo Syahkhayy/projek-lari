@@ -14,4 +14,5 @@ export const DECAY_MODERATE = 0.2; // 5-7 days inactive
 export const DECAY_HEAVY = 0.4;    // 8+ days inactive
 
 // ─── Run Validation ───
-export const MIN_DISTANCE_KM = 1;  // Minimum 1KM per run
+export const MIN_DISTANCE_KM = 1;   // Minimum 1KM per run
+export const MAX_DISTANCE_KM = 100; // Maximum 100KM per run (safety cap)

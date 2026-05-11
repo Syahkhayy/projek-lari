@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { MIN_DISTANCE_KM } from "@/lib/constants";
+import { MIN_DISTANCE_KM, MAX_DISTANCE_KM } from "@/lib/constants";
 import { improveEndurance } from "@/lib/endurance";
+import { getMood } from "@/lib/mood";
 import "./LogRun.css";
 
 interface LogRunProps {
@@ -23,16 +24,16 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
 
   useEffect(() => {
     setIsSuccess(false); // Reset success state on refresh
-    checkTodayLog();
+    //checkTodayLog();
   }, [refreshKey]);
 
-
+  /*
   const checkTodayLog = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const today = new Date().toISOString().split("T")[0];
-
+    
     const { data } = await supabase
       .from("runs")
       .select("created_at")
@@ -47,7 +48,7 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
       setHasLoggedToday(false); // Make sure to reset if no log found
     }
   };
-
+  */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -61,8 +62,11 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
       if (isNaN(distNum) || distNum < MIN_DISTANCE_KM) {
         throw new Error(`Kura needs at least ${MIN_DISTANCE_KM}km to improve!`);
       }
+      if (distNum > MAX_DISTANCE_KM) {
+        throw new Error(`That's a massive run! Kura can only handle up to ${MAX_DISTANCE_KM}km at once.`);
+      }
       if (isNaN(timeNum) || timeNum <= 0) {
-        throw new Error("Please enter a valid time for your run.");
+        throw new Error("Kura needs to know how long you took! Please enter a valid time.");
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -106,9 +110,13 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
   }
 
   if (isSuccess) {
+    const mood = getMood(currentEndurance);
+    const message = mood.successMessages[Math.floor(Math.random() * mood.successMessages.length)];
+    
     return (
       <div className="log-run-card success">
-        <p className="log-message">Great run! Kura's endurance improved!</p>
+        <p className="log-message">{message}</p>
+        <span className="log-submessage">Kura's endurance improved!</span>
       </div>
     );
   }

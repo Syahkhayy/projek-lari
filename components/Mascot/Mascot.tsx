@@ -3,17 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import "./Mascot.css";
 
-const MESSAGES = [
-  "Slow and steady...",
-  "Shell-o!",
-  "Is it snack time?",
-  "I'm not slow, I'm efficient.",
-  "Nice pace!",
-  "Can you carry me?",
-  "Wheeee!",
-];
+import { getMood } from "@/lib/mood";
 
-export default function Mascot() {
+interface MascotProps {
+  endurance: number;
+  daysSinceLastRun: number;
+}
+
+export default function Mascot({ endurance, daysSinceLastRun }: MascotProps) {
   const [pos, setPos] = useState({ x: 100, y: 0 });
   const [vel, setVel] = useState({ x: 0.5, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -111,16 +108,18 @@ export default function Mascot() {
     return () => cancelAnimationFrame(requestRef.current!);
   }, [isDragging, vel]);
 
-  // Periodic random messages
+  // Periodic random messages based on mood
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!isDragging && Math.random() > 0.8) {
-        setMessage(MESSAGES[Math.floor(Math.random() * MESSAGES.length)]);
+      if (!isDragging && Math.random() > 0.7) {
+        const mood = getMood(endurance);
+        const pool = mood.idleMessages;
+        setMessage(pool[Math.floor(Math.random() * pool.length)]);
         setTimeout(() => setMessage(""), 3000);
       }
     }, 6000);
     return () => clearInterval(interval);
-  }, [isDragging]);
+  }, [isDragging, endurance]);
 
   return (
     <div
@@ -135,8 +134,8 @@ export default function Mascot() {
     >
       {message && <div className="speech-bubble">{message}</div>}
       <img
-        src="/mascot.png"
-        alt="Turtle Mascot"
+        src={getMood(endurance).sprite}
+        alt="Kura Mascot"
         className={`mascot-sprite ${isFlipped ? "turtle-flipped" : ""}`}
         draggable={false}
       />

@@ -93,6 +93,7 @@ body {
   border-radius: 0.5rem;
   transition: all 0.2s;
   font-family: var(--font-pixel);
+  cursor: pointer;
 }
 
 .pixel-btn:hover {
