@@ -10,6 +10,7 @@ import Mascot from "@/components/Mascot/Mascot";
 import LogRun from "@/components/LogRun/LogRun";
 import RunList from "@/components/RunList/RunList";
 import OnboardingModal from "@/components/OnboardingModal/OnboardingModal";
+import ComicModal from "@/components/ComicModal/ComicModal";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
@@ -20,6 +21,7 @@ export default function DashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [daysSinceLastRun, setDaysSinceLastRun] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showComic, setShowComic] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ export default function DashboardPage() {
       if (!profile) return;
 
       if (!profile.has_seen_onboarding) {
-        setShowOnboarding(true);
+        setShowComic(true);
       } else {
         setHasSeenOnboarding(true);
       }
@@ -109,15 +111,25 @@ export default function DashboardPage() {
     }, 1500);
   };
 
+  const handleCloseComic = () => {
+    setShowComic(false);
+    // After comic ends for first-timer, show guide
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  };
+
   const handleCloseOnboarding = async () => {
     setShowOnboarding(false);
-    setHasSeenOnboarding(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase
-        .from("profiles")
-        .update({ has_seen_onboarding: true })
-        .eq("id", user.id);
+    if (!hasSeenOnboarding) {
+      setHasSeenOnboarding(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("profiles")
+          .update({ has_seen_onboarding: true })
+          .eq("id", user.id);
+      }
     }
   };
 
@@ -167,6 +179,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="header-actions">
+            <button
+              onClick={() => setShowComic(true)}
+              className="pixel-btn story-btn"
+              title="Kura's Story"
+            >
+              📖
+            </button>
             <button
               onClick={() => setShowOnboarding(true)}
               className="pixel-btn info-btn"
@@ -227,10 +246,14 @@ export default function DashboardPage() {
 
         <Mascot endurance={currentEndurance} daysSinceLastRun={daysSinceLastRun} />
 
+        <ComicModal 
+          isOpen={showComic}
+          onClose={handleCloseComic}
+        />
+
         <OnboardingModal
           isOpen={showOnboarding}
           onClose={handleCloseOnboarding}
-          hasSeenBefore={hasSeenOnboarding}
         />
       </div>
     </div>

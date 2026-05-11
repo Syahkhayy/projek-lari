@@ -136,15 +136,25 @@
 @media (max-width: 600px) {
   .history-card {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem;
   }
   
   .history-stats {
     width: 100%;
-    justify-content: flex-start;
-    gap: 1.5rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--border);
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--border);
+    text-align: left;
+  }
+
+  .history-main {
+    text-align: center;
+  }
+
+  .history-stack::before {
+    left: 1rem;
   }
 }

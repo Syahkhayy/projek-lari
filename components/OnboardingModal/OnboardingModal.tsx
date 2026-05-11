@@ -9,14 +9,12 @@ interface OnboardingModalProps {
   hasSeenBefore?: boolean;
 }
 
-export default function OnboardingModal({ isOpen, onClose, hasSeenBefore }: OnboardingModalProps) {
+export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   const [step, setStep] = useState(1);
-  const [mode, setMode] = useState<"guide" | "story">(hasSeenBefore ? "story" : "guide");
 
   if (!isOpen) return null;
 
-  const nextStep = (max: number) => setStep(prev => (prev < max ? prev + 1 : prev));
-  const prevStep = () => setStep(prev => (prev > 1 ? prev - 1 : prev));
+  const nextStep = () => setStep(prev => prev + 1);
 
   const onboardingSteps = [
     {
@@ -69,7 +67,7 @@ export default function OnboardingModal({ isOpen, onClose, hasSeenBefore }: Onbo
       btnText: "THE UNKNOWN AWAITS"
     },
     {
-      header: "⚔️ Prepare for the Unknown",
+      header: "Prepare for the Unknown",
       icon: "⚔️",
       content: (
         <>
@@ -82,80 +80,34 @@ export default function OnboardingModal({ isOpen, onClose, hasSeenBefore }: Onbo
     }
   ];
 
-  const comicPages = [
-    { src: "/comic1.png", alt: "Chapter 1: The Chosen One" },
-    { src: "/comic-placeholder.png", alt: "Chapter 2: Coming Soon" },
-    { src: "/comic-placeholder.png", alt: "Chapter 3: Coming Soon" },
-    { src: "/comic-placeholder.png", alt: "Chapter 4: Coming Soon" }
-  ];
-
   const currentStep = onboardingSteps[step - 1];
-  const currentComic = comicPages[step - 1];
 
   return (
     <div className="kura-modal-overlay">
       <div className="kura-modal-content pixel-card">
         <div className="modal-header">
-          <div className="modal-tabs">
-            <button 
-              className={`tab-btn ${mode === "guide" ? "active" : ""}`}
-              onClick={() => { setMode("guide"); setStep(1); }}
-            >
-              GUIDE
-            </button>
-            <button 
-              className={`tab-btn ${mode === "story" ? "active" : ""}`}
-              onClick={() => { setMode("story"); setStep(1); }}
-            >
-              STORY
-            </button>
-          </div>
+          <h2 className="pixel-font">{currentStep.header}</h2>
           <button onClick={onClose} className="close-btn">×</button>
         </div>
 
         <div className="modal-body">
-          {mode === "guide" ? (
-            <div className="onboarding-step">
-              <h2 className="pixel-font step-title">{currentStep.header}</h2>
-              <div className="onboarding-icon">{currentStep.icon}</div>
-              <div className="onboarding-text-content">
-                {currentStep.content}
-              </div>
-              <button 
-                onClick={step === onboardingSteps.length ? onClose : () => nextStep(onboardingSteps.length)} 
-                className="pixel-btn pixel-btn-primary"
-              >
-                {currentStep.btnText}
-              </button>
+          <div className="onboarding-step">
+            <div className="onboarding-icon">{currentStep.icon}</div>
+            <div className="onboarding-text-content">
+              {currentStep.content}
             </div>
-          ) : (
-            <div className="comic-viewer">
-              <div className="comic-page-container">
-                <img src={currentComic.src} alt={currentComic.alt} className="comic-img" />
-              </div>
-              <div className="comic-controls">
-                <button 
-                  onClick={prevStep} 
-                  disabled={step === 1}
-                  className="pixel-btn nav-btn"
-                >
-                  &lt;
-                </button>
-                <span className="page-indicator">PAGE {step} / 4</span>
-                <button 
-                  onClick={() => step < 4 ? nextStep(4) : onClose()} 
-                  className="pixel-btn nav-btn"
-                >
-                  {step === 4 ? "DONE" : ">"}
-                </button>
-              </div>
-            </div>
-          )}
+            <button 
+              onClick={step === onboardingSteps.length ? onClose : nextStep} 
+              className="pixel-btn pixel-btn-primary"
+            >
+              {currentStep.btnText}
+            </button>
+          </div>
         </div>
 
         <div className="modal-footer">
           <div className="step-dots">
-            {(mode === "guide" ? onboardingSteps : comicPages).map((_, i) => (
+            {onboardingSteps.map((_, i) => (
               <span 
                 key={i}
                 className={step === i + 1 ? "active" : ""} 

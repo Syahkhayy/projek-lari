@@ -54,7 +54,7 @@
   align-items: center;
 }
 
-.info-btn {
+.info-btn, .story-btn {
   width: 2.5rem;
   height: 2.5rem;
   display: flex;
@@ -113,8 +113,9 @@
   color: var(--primary);
   font-family: var(--font-pixel);
   letter-spacing: -0.04em;
-  margin-bottom: 0.75rem;
-  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), transparent 80%);
+  margin-bottom: 1rem;
+  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), transparent 85%);
+  line-height: 1.1;
 }
 
 .monologue-cloud {
@@ -187,6 +188,7 @@
 
 /* ─── Endurance Card ─── */
 .endurance-card {
+  height: 100%;
   padding: clamp(2rem, 5vw, 3.5rem);
   background-color: var(--card);
   box-shadow: 8px 8px 0px 0px color-mix(in srgb, var(--primary), transparent 90%);
@@ -400,15 +402,24 @@
 }
 
 @media (max-width: 480px) {
-  .dashboard-layout {
-    padding: 0.5rem;
+  .dashboard-inner {
+    padding: 1rem;
+    gap: 2rem;
   }
   
   .endurance-card {
-    padding: 1.5rem;
+    padding: 2rem 1rem;
   }
   
   .endurance-value {
-    font-size: 4rem;
+    font-size: 4.5rem;
+  }
+
+  .endurance-main-display {
+    margin-bottom: 2rem;
+  }
+
+  .monologue-cloud {
+    padding: 0.75rem 1rem;
   }
 }

@@ -123,53 +123,6 @@
   margin: 0;
 }
 
-/* ─── Comic Viewer ─── */
-.comic-viewer {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-}
-
-.comic-page-container {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  background: #000;
-  border: 4px solid var(--border);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.comic-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: auto; /* For smoother comic art */
-}
-
-.comic-controls {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-btn {
-  width: 3rem;
-  height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-}
-
-.page-indicator {
-  font-family: var(--font-pixel);
-  font-size: 0.75rem;
-  color: var(--muted-foreground);
-}
-
 .modal-footer {
   margin-top: 2.5rem;
   display: flex;
@@ -198,4 +151,37 @@
 .step-dots span.active {
   background: var(--primary);
   transform: scale(1.3);
+}
+
+/* ─── Mobile Responsiveness ─── */
+@media (max-width: 640px) {
+  .kura-modal-content {
+    padding: 1.5rem;
+    max-width: 95%;
+  }
+
+  .modal-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .onboarding-icon {
+    font-size: 3rem;
+  }
+
+  .onboarding-step {
+    min-height: auto;
+    gap: 1rem;
+  }
+
+  .onboarding-step p {
+    font-size: 0.85rem;
+  }
+
+  .step-title {
+    font-size: 1.1rem;
+  }
+
+  .modal-footer {
+    margin-top: 1.5rem;
+  }
 }
