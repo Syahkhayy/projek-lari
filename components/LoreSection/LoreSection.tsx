@@ -21,14 +21,20 @@ export default function LoreSection({ currentEndurance }: LoreSectionProps) {
   return (
     <div className={`lore-section ${isExpanded ? "expanded" : ""}`}>
       <div className="lore-header" onClick={() => setIsExpanded(!isExpanded)}>
-        <span className="lore-tag">{currentSnippet.category.toUpperCase()}</span>
+        <span className="lore-tag">{currentSnippet.title.toUpperCase()}</span>
         <span className="lore-toggle">{isExpanded ? "−" : "+"}</span>
       </div>
 
-      <div className="lore-content-wrapper">
-        <h4 className="lore-title">{currentSnippet.title}</h4>
+      <div className="lore-content-wrapper" onClick={() => setIsExpanded(!isExpanded)}>
         <p className="lore-text">"{currentSnippet.content}"</p>
       </div>
+
+      {!isExpanded && (
+        <div className="lore-hint" onClick={() => setIsExpanded(!isExpanded)}>
+          <div className="lore-divider">---------------------------------</div>
+          <div className="lore-hint-text">READ MORE</div>
+        </div>
+      )}
     </div>
   );
 }

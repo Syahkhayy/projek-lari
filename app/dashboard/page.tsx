@@ -32,7 +32,10 @@ export default function DashboardPage() {
   const fetchUserData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        router.push("/login");
+        return;
+      }
 
       // 1. Fetch current endurance and onboarding status from profile
       let { data: profile, error: profileError } = await supabase
@@ -100,8 +103,8 @@ export default function DashboardPage() {
     setRefreshKey(prev => prev + 1); // Trigger RunList refresh
   };
 
-  const handleLogout = async () => {
-    if (!confirm("Ready to rest for a while? Kura will miss you!")) return;
+  const handleLogout = async (silent = false) => {
+    if (!silent && !confirm("Ready to rest for a while? Kura will miss you!")) return;
 
     setIsLoggingOut(true);
 
@@ -111,6 +114,36 @@ export default function DashboardPage() {
       router.push("/login");
     }, 1500);
   };
+
+  // ─── Inactivity Timeout (5 Minutes) ───
+  useEffect(() => {
+    const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    let timeoutId: NodeJS.Timeout;
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        handleLogout(true); // Silent logout after timeout
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    // Events to track user activity
+    const activityEvents = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+    
+    activityEvents.forEach(event => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    // Initialize timer
+    resetTimer();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      activityEvents.forEach(event => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, []);
 
   const handleCloseComic = () => {
     setShowComic(false);
@@ -197,7 +230,7 @@ export default function DashboardPage() {
             >
               ?
             </button>
-            <button onClick={handleLogout} className="pixel-btn logout-btn">
+            <button onClick={() => handleLogout()} className="pixel-btn logout-btn">
               LOGOUT
             </button>
           </div>

@@ -79,14 +79,6 @@
   animation: slideDown 0.3s ease-out;
 }
 
-.lore-title {
-  font-family: var(--font-pixel);
-  font-size: 0.85rem;
-  color: var(--foreground);
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-}
-
 .lore-text {
   font-family: var(--font-pixel);
   font-size: 0.75rem;
@@ -161,6 +153,36 @@
   to {
     opacity: 1;
   }
+}
+
+.lore-hint {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.lore-section:hover .lore-hint {
+  opacity: 1;
+}
+
+.lore-divider {
+  font-family: var(--font-pixel);
+  font-size: 0.5rem;
+  color: var(--primary);
+  letter-spacing: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.lore-hint-text {
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  color: var(--primary);
+  font-weight: bold;
+  letter-spacing: 0.1em;
 }
 
 @media (max-width: 600px) {

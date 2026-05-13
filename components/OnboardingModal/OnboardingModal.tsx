@@ -103,16 +103,17 @@ export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProp
             <div className="onboarding-text-content">
               {currentStep.content}
             </div>
-            <button 
-              onClick={step === onboardingSteps.length ? onClose : nextStep} 
-              className="pixel-btn pixel-btn-primary"
-            >
-              {currentStep.btnText}
-            </button>
           </div>
         </div>
 
         <div className="modal-footer">
+          <button 
+            onClick={step === onboardingSteps.length ? onClose : nextStep} 
+            className="pixel-btn pixel-btn-primary onboarding-action-btn"
+          >
+            {currentStep.btnText}
+          </button>
+          
           <div className="step-dots">
             {onboardingSteps.map((_, i) => (
               <span 

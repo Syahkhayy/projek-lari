@@ -13,21 +13,21 @@ export interface LoreSnippet {
  */
 export const LORE_DATABASE: LoreSnippet[] = [
   // ─── Endurance 1 ───
-  { category: "Village News", unlockEndurance: 1, title: "The Harvest Festival", content: "The village celebrated a bountiful harvest today. Everyone toasted to Kura's health and training." },
-  { category: "Village News", unlockEndurance: 1, title: "New Bridge Built", content: "Ciktam helped build a new bridge over the stream. He says it will make Kura's path smoother." },
-  { category: "Village News", unlockEndurance: 1, title: "Stranger in Town", content: "A traveling minstrel arrived today, singing songs of brave creatures. Kura was mentioned in the chorus!" },
+  { category: "Village News", unlockEndurance: 1, title: "News from the village", content: "Some villagers noticed Kura training near the old gate this morning. Nobody said anything, but the laughter was quieter than before." },
+  { category: "Village News", unlockEndurance: 1, title: "Interview of the village baker...", content: "Kura was seen running before sunrise today.The bakery owner almost dropped his bread in surprise." },
+  { category: "Village News", unlockEndurance: 1, title: "Village elders heresay...", content: "The village elders still doubt Kura’s chances.But for the first time, they did not stop him from training." },
 
-  { category: "Village Whispers", unlockEndurance: 1, title: "The Hidden Map", content: "Someone found an old map in the attic. It shows secret tunnels beneath the Forest Grove." },
-  { category: "Village Whispers", unlockEndurance: 1, title: "Sleepy Talk", content: "Tok the elder was heard talking in his sleep about a 'Shield of Green'. Could he mean Kura?" },
-  { category: "Village Whispers", unlockEndurance: 1, title: "Moving Roots", content: "The younger kids say they saw the ancient oak tree move its roots last night. The forest is waking up." },
+  { category: "Village Whispers", unlockEndurance: 1, title: "A strange determination", content: "They say Kura collapsed after only one kilometer… But he stood up and continued walking home alone." },
+  { category: "Village Whispers", unlockEndurance: 1, title: "Children are curious", content: "Some village children have started imitating Kura’s stretches near the fountain. Nobody knows if it is admiration or amusement." },
+  { category: "Village Whispers", unlockEndurance: 1, title: "Late night talk", content: "The turtle still trains every few days… Maybe he truly wants to change this time." },
 
-  { category: "AR Rumors", unlockEndurance: 1, title: "Steel in the West", content: "Travelers say the AR. Nab army is massing iron. They are building something big beyond the mountains." },
-  { category: "AR Rumors", unlockEndurance: 1, title: "The Black Banners", content: "A scout saw black banners being raised at the Iron Fort. The Iron Rabbits are preparing for war." },
-  { category: "AR Rumors", unlockEndurance: 1, title: "The Scout's Warning", content: "A wounded sparrow arrived from the west. 'They are coming for the green places,' it chirped." },
+  { category: "AR Rumors", unlockEndurance: 1, title: "Rumor about the army leader", content: "Travelers claim AR. Nab once crossed two valleys without stopping. Nobody knows whether the story is true." },
+  { category: "AR Rumors", unlockEndurance: 1, title: "Silent Scouts spotted", content: "A pair of rabbit scouts were seen near the northern hill yesterday. They left before sunrise without saying a word." },
+  { category: "AR Rumors", unlockEndurance: 1, title: "An impossible distance", content: "Some believe AR. Nab can run farther than anyone in the region. Others believe the rumors are exaggerated to spread fear, for mass control." },
 
-  { category: "Journey Notes", unlockEndurance: 1, title: "The First Step", content: "Kura's shell felt heavy today, but the first kilometer is always the hardest. The journey begins." },
-  { category: "Journey Notes", unlockEndurance: 1, title: "Morning Mist", content: "The forest air was crisp as Kura started his run. Every breath is a victory over the slow life." },
-  { category: "Journey Notes", unlockEndurance: 1, title: "The Steady Pace", content: "Slow and steady isn't just a saying; it's Kura's tactical advantage against the impulsive Iron Rabbits." },
+  { category: "Journey Notes", unlockEndurance: 1, title: "Beyond The Village Gate", content: "Kura managed to reach the old eastern path today. The road still feels long, but no longer impossible." },
+  { category: "Journey Notes", unlockEndurance: 1, title: "The Training Trail", content: "The dirt trail behind the village has become familiar to Kura. His breathing still struggles, but his steps hesitate less." },
+  { category: "Journey Notes", unlockEndurance: 1, title: "A Longer Run", content: "Kura nearly stopped halfway through today’s training. But somehow, he kept moving a little farther than before." },
 
   // ─── Endurance 5 ───
 
@@ -35,7 +35,7 @@ export const LORE_DATABASE: LoreSnippet[] = [
   { category: "Village News", unlockEndurance: 5, title: "Garden of Hope", content: "The children have planted a new garden specifically for Kura's favorite greens." },
   { category: "Village News", unlockEndurance: 5, title: "Oyen's Lookout", content: "Oyen the cat has claimed the highest roof in the village. He's keeping a sharp eye on the horizon." },
 
-  { category: "Village Whispers", unlockEndurance: 5, title: "Shadow of the Cat", content: "Oyen isn't just sleeping. They say he disappears into the shadows and returns with news of the army." },
+  { category: "Village Whispers", unlockEndurance: 5, title: "Kura can run 5km now!", content: "The eastern village scouts said he always brought them breakfast, their post is 4km one-way!" },
   { category: "Village Whispers", unlockEndurance: 5, title: "The Silent Owl", content: "An owl hasn't hooted for three nights. In the village, they say that means a big change is coming." },
   { category: "Village Whispers", unlockEndurance: 5, title: "Whispering Moss", content: "If you press your ear to the moss near Kura's favorite spot, you can hear the heartbeat of the forest." },
 
