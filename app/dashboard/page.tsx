@@ -11,6 +11,7 @@ import LogRun from "@/components/LogRun/LogRun";
 import RunList from "@/components/RunList/RunList";
 import OnboardingModal from "@/components/OnboardingModal/OnboardingModal";
 import ComicModal from "@/components/ComicModal/ComicModal";
+import LoreSection from "@/components/LoreSection/LoreSection";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
@@ -173,9 +174,12 @@ export default function DashboardPage() {
         <header className="dashboard-header">
           <div className="header-info">
             <h1 className="dashboard-title">TRAINING GROUND</h1>
-            <div className="monologue-cloud">
-              <span className="mood-tag">{mood.label}</span>
-              <p className="kura-speech">"{statusMessage}"</p>
+            <div className="header-story-container">
+              <div className="monologue-cloud">
+                <span className="mood-tag">{mood.label}</span>
+                <p className="kura-speech">"{statusMessage}"</p>
+              </div>
+              <LoreSection currentEndurance={currentEndurance} />
             </div>
           </div>
           <div className="header-actions">

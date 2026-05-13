@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { MIN_DISTANCE_KM, MAX_DISTANCE_KM } from "@/lib/constants";
+import {
+  MIN_DISTANCE_KM,
+  MAX_DISTANCE_KM,
+  MIN_PACE_MIN_KM,
+  MAX_PACE_MIN_KM
+} from "@/lib/constants";
 import { improveEndurance } from "@/lib/endurance";
 import { getMood } from "@/lib/mood";
 import "./LogRun.css";
@@ -27,13 +32,13 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
     //checkTodayLog();
   }, [refreshKey]);
 
-  /*
+
   const checkTodayLog = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const today = new Date().toISOString().split("T")[0];
-    
+
     const { data } = await supabase
       .from("runs")
       .select("created_at")
@@ -48,7 +53,7 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
       setHasLoggedToday(false); // Make sure to reset if no log found
     }
   };
-  */
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -67,6 +72,17 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
       }
       if (isNaN(timeNum) || timeNum <= 0) {
         throw new Error("Kura needs to know how long you took! Please enter a valid time.");
+      }
+
+      // 1b. Pace Sanity Check
+      const pace = timeNum / distNum;
+
+      if (pace < MIN_PACE_MIN_KM) {
+        throw new Error(`Whoa! ${pace.toFixed(2)} min/km? You're faster than a rocket! Please double-check your time.`);
+      }
+
+      if (pace > MAX_PACE_MIN_KM) {
+        throw new Error(`At ${pace.toFixed(2)} min/km, that's more of a gentle crawl for Kura. Try a more active pace!`);
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -112,7 +128,7 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
   if (isSuccess) {
     const mood = getMood(currentEndurance);
     const message = mood.successMessages[Math.floor(Math.random() * mood.successMessages.length)];
-    
+
     return (
       <div className="log-run-card success">
         <p className="log-message">{message}</p>

@@ -29,29 +29,40 @@
 
 /* ─── Header ─── */
 .dashboard-header {
+  position: relative;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding-bottom: 2rem;
-  gap: 1rem;
-}
-
-@media (max-width: 600px) {
-  .dashboard-header {
-    flex-direction: column;
-    text-align: center;
-  }
+  width: 100%;
 }
 
 .header-info {
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .dashboard-header {
+    text-align: center;
+    padding-top: 4rem; /* Make room for absolute buttons if they stay absolute, or make them static */
+  }
+  
+  .header-actions {
+    position: static;
+    justify-content: center;
+    margin-top: 1rem;
+  }
 }
 
 .header-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: flex;
   gap: 1rem;
   align-items: center;
+  z-index: 20;
 }
 
 .info-btn, .story-btn {
@@ -118,17 +129,33 @@
   line-height: 1.1;
 }
 
+.header-story-container {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+}
+
 .monologue-cloud {
   background: var(--card);
   padding: 1rem 1.5rem;
   border: 4px solid var(--primary);
   position: relative;
+  width: 100%;
   max-width: 450px;
-  margin-top: 0.5rem;
+  flex-shrink: 0;
   box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+@media (max-width: 900px) {
+  .header-story-container {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 /* Comic bubble tail pointing up */

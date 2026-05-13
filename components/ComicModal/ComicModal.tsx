@@ -10,11 +10,43 @@ interface ComicModalProps {
 
 export default function ComicModal({ isOpen, onClose }: ComicModalProps) {
   const [step, setStep] = useState(1);
+  const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDir, setFlipDir] = useState<'next' | 'prev'>('next');
 
   if (!isOpen) return null;
 
-  const nextStep = () => setStep(prev => (prev < 4 ? prev + 1 : prev));
-  const prevStep = () => setStep(prev => (prev > 1 ? prev - 1 : prev));
+  const handlePageChange = (newStep: number, dir: 'next' | 'prev') => {
+    if (isFlipping || newStep === step) return;
+    
+    setFlipDir(dir);
+    setIsFlipping(true);
+    
+    // Swap image at the "peak" of the flip (middle of animation)
+    setTimeout(() => {
+      setStep(newStep);
+    }, 400);
+
+    // Reset flipping state after animation ends
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 800);
+  };
+
+  const nextStep = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (step < 4) {
+      handlePageChange(step + 1, 'next');
+    } else {
+      onClose();
+    }
+  };
+
+  const prevStep = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (step > 1) {
+      handlePageChange(step - 1, 'prev');
+    }
+  };
 
   const comicPages = [
     { src: "/comic1.png", alt: "Chapter 1: The Chosen One" },
@@ -26,19 +58,19 @@ export default function ComicModal({ isOpen, onClose }: ComicModalProps) {
   const currentComic = comicPages[step - 1];
 
   return (
-    <div className="comic-modal-overlay">
-      <div className="comic-modal-content">
+    <div className="comic-modal-overlay" onClick={onClose}>
+      <div className="comic-modal-content" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="comic-close-btn">×</button>
         
         <div className="comic-fullscreen-viewer">
-          <div className="comic-page-wrapper">
+          <div className={`comic-page-wrapper ${isFlipping ? `flipping-${flipDir}` : ""}`}>
              <img src={currentComic.src} alt={currentComic.alt} className="comic-full-img" />
           </div>
 
           <div className="comic-bottom-controls">
             <button 
               onClick={prevStep} 
-              disabled={step === 1}
+              disabled={step === 1 || isFlipping}
               className="comic-nav-btn prev"
             >
               &lt;
@@ -51,14 +83,15 @@ export default function ComicModal({ isOpen, onClose }: ComicModalProps) {
                   <span 
                     key={i} 
                     className={step === i + 1 ? "active" : ""}
-                    onClick={() => setStep(i + 1)}
+                    onClick={() => handlePageChange(i + 1, i + 1 > step ? 'next' : 'prev')}
                   />
                 ))}
               </div>
             </div>
 
             <button 
-              onClick={() => step < 4 ? nextStep() : onClose()} 
+              onClick={nextStep} 
+              disabled={isFlipping}
               className="comic-nav-btn next"
             >
               {step === 4 ? "DONE" : ">"}

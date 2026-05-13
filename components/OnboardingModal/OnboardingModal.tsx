@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./OnboardingModal.css";
 
 interface OnboardingModalProps {
@@ -11,6 +11,13 @@ interface OnboardingModalProps {
 
 export default function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   const [step, setStep] = useState(1);
+
+  // Reset to first page every time the modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      setStep(1);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
