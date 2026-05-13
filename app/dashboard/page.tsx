@@ -24,6 +24,7 @@ export default function DashboardPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showComic, setShowComic] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -201,11 +202,20 @@ export default function DashboardPage() {
   const mood = getMood(currentEndurance);
 
   return (
-    <div className="dashboard-layout">
+    <div className={`dashboard-layout ${isMobileMenuOpen ? "mobile-menu-open" : ""}`}>
       <div className="dashboard-inner">
         {/* ─── Header ─── */}
         <header className="dashboard-header">
           <div className="header-info">
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle Menu"
+            >
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+            </button>
             <h1 className="dashboard-title">TRAINING GROUND</h1>
             <div className="header-story-container">
               <div className="monologue-cloud">
@@ -215,7 +225,7 @@ export default function DashboardPage() {
               <LoreSection currentEndurance={currentEndurance} />
             </div>
           </div>
-          <div className="header-actions">
+          <div className="header-actions desktop-only">
             <button
               onClick={() => setShowComic(true)}
               className="pixel-btn story-btn"
@@ -235,6 +245,42 @@ export default function DashboardPage() {
             </button>
           </div>
         </header>
+
+        {/* ─── Mobile Sidebar ─── */}
+        <aside className={`mobile-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
+          <div className="sidebar-header">
+            <h2 className="pixel-font">MENU</h2>
+            <button className="close-sidebar" onClick={() => setIsMobileMenuOpen(false)}>×</button>
+          </div>
+          <div className="sidebar-content">
+            <div className="sidebar-actions-list">
+              <button
+                onClick={() => { setShowComic(true); setIsMobileMenuOpen(false); }}
+                className="pixel-btn sidebar-action-item"
+              >
+                <span className="icon">📖</span> KURA'S STORY
+              </button>
+              <button
+                onClick={() => { setShowOnboarding(true); setIsMobileMenuOpen(false); }}
+                className="pixel-btn sidebar-action-item"
+              >
+                <span className="icon">?</span> HOW IT WORKS
+              </button>
+              <div className="sidebar-divider"></div>
+              <button 
+                onClick={() => handleLogout()} 
+                className="pixel-btn logout-btn sidebar-logout"
+              >
+                LOGOUT
+              </button>
+            </div>
+          </div>
+        </aside>
+        
+        {/* Overlay for mobile menu */}
+        {isMobileMenuOpen && (
+          <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>
+        )}
 
         <div className="dashboard-content">
           {/* ─── Left: Progress ─── */}
