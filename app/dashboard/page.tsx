@@ -11,6 +11,7 @@ import LogRun from "@/components/LogRun/LogRun";
 import RunList from "@/components/RunList/RunList";
 import OnboardingModal from "@/components/OnboardingModal/OnboardingModal";
 import ComicModal from "@/components/ComicModal/ComicModal";
+import LoreSection from "@/components/LoreSection/LoreSection";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showComic, setShowComic] = useState(false);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -31,7 +33,10 @@ export default function DashboardPage() {
   const fetchUserData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        router.push("/login");
+        return;
+      }
 
       // 1. Fetch current endurance and onboarding status from profile
       let { data: profile, error: profileError } = await supabase
@@ -99,8 +104,8 @@ export default function DashboardPage() {
     setRefreshKey(prev => prev + 1); // Trigger RunList refresh
   };
 
-  const handleLogout = async () => {
-    if (!confirm("Ready to rest for a while? Kura will miss you!")) return;
+  const handleLogout = async (silent = false) => {
+    if (!silent && !confirm("Ready to rest for a while? Kura will miss you!")) return;
 
     setIsLoggingOut(true);
 
@@ -110,6 +115,36 @@ export default function DashboardPage() {
       router.push("/login");
     }, 1500);
   };
+
+  // ─── Inactivity Timeout (5 Minutes) ───
+  useEffect(() => {
+    const INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+    let timeoutId: NodeJS.Timeout;
+
+    const resetTimer = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        handleLogout(true); // Silent logout after timeout
+      }, INACTIVITY_TIMEOUT);
+    };
+
+    // Events to track user activity
+    const activityEvents = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+    
+    activityEvents.forEach(event => {
+      window.addEventListener(event, resetTimer);
+    });
+
+    // Initialize timer
+    resetTimer();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      activityEvents.forEach(event => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, []);
 
   const handleCloseComic = () => {
     setShowComic(false);
@@ -167,18 +202,30 @@ export default function DashboardPage() {
   const mood = getMood(currentEndurance);
 
   return (
-    <div className="dashboard-layout">
+    <div className={`dashboard-layout ${isMobileMenuOpen ? "mobile-menu-open" : ""}`}>
       <div className="dashboard-inner">
         {/* ─── Header ─── */}
         <header className="dashboard-header">
           <div className="header-info">
+            <button 
+              className="hamburger-btn" 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle Menu"
+            >
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+            </button>
             <h1 className="dashboard-title">TRAINING GROUND</h1>
-            <div className="monologue-cloud">
-              <span className="mood-tag">{mood.label}</span>
-              <p className="kura-speech">"{statusMessage}"</p>
+            <div className="header-story-container">
+              <div className="monologue-cloud">
+                <span className="mood-tag">{mood.label}</span>
+                <p className="kura-speech">"{statusMessage}"</p>
+              </div>
+              <LoreSection currentEndurance={currentEndurance} />
             </div>
           </div>
-          <div className="header-actions">
+          <div className="header-actions desktop-only">
             <button
               onClick={() => setShowComic(true)}
               className="pixel-btn story-btn"
@@ -193,11 +240,47 @@ export default function DashboardPage() {
             >
               ?
             </button>
-            <button onClick={handleLogout} className="pixel-btn logout-btn">
+            <button onClick={() => handleLogout()} className="pixel-btn logout-btn">
               LOGOUT
             </button>
           </div>
         </header>
+
+        {/* ─── Mobile Sidebar ─── */}
+        <aside className={`mobile-sidebar ${isMobileMenuOpen ? "open" : ""}`}>
+          <div className="sidebar-header">
+            <h2 className="pixel-font">MENU</h2>
+            <button className="close-sidebar" onClick={() => setIsMobileMenuOpen(false)}>×</button>
+          </div>
+          <div className="sidebar-content">
+            <div className="sidebar-actions-list">
+              <button
+                onClick={() => { setShowComic(true); setIsMobileMenuOpen(false); }}
+                className="pixel-btn sidebar-action-item"
+              >
+                <span className="icon">📖</span> KURA'S STORY
+              </button>
+              <button
+                onClick={() => { setShowOnboarding(true); setIsMobileMenuOpen(false); }}
+                className="pixel-btn sidebar-action-item"
+              >
+                <span className="icon">?</span> HOW IT WORKS
+              </button>
+              <div className="sidebar-divider"></div>
+              <button 
+                onClick={() => handleLogout()} 
+                className="pixel-btn logout-btn sidebar-logout"
+              >
+                LOGOUT
+              </button>
+            </div>
+          </div>
+        </aside>
+        
+        {/* Overlay for mobile menu */}
+        {isMobileMenuOpen && (
+          <div className="sidebar-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>
+        )}
 
         <div className="dashboard-content">
           {/* ─── Left: Progress ─── */}

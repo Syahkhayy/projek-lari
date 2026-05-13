@@ -16,3 +16,5 @@ export const DECAY_HEAVY = 0.4;    // 8+ days inactive
 // ─── Run Validation ───
 export const MIN_DISTANCE_KM = 1;   // Minimum 1KM per run
 export const MAX_DISTANCE_KM = 100; // Maximum 100KM per run (safety cap)
+export const MIN_PACE_MIN_KM = 2.0; // Inhumanly fast (< 2 min/km)
+export const MAX_PACE_MIN_KM = 20.0; // Too slow for a run (> 20 min/km)

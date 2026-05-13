@@ -17,6 +17,9 @@ const pressStart2P = Press_Start_2P({
 export const metadata: Metadata = {
   title: "KURA",
   description: "Level up your running quest with pixel-art motivation.",
+  icons: {
+    icon: "/mascot.png",
+  },
 };
 
 export default function RootLayout({
