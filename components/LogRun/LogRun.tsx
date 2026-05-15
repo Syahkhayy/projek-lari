@@ -29,7 +29,7 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
 
   useEffect(() => {
     setIsSuccess(false); // Reset success state on refresh
-    //checkTodayLog();
+    checkTodayLog();
   }, [refreshKey]);
 
 

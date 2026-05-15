@@ -18,6 +18,7 @@
   --destructive-border: #ef4444;
   --destructive-bg: #fef2f2;
   --destructive-foreground: #fef2f2;
+  --background-overlay: rgba(254, 252, 232, 0.75);
 }
 
 @theme inline {
@@ -40,31 +41,31 @@
   --font-pixel: var(--font-pixel);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0c0a09;
-    --foreground: #f5f5f4;
-    --primary: #4ade80;
-    --primary-foreground: #052e16;
-    --accent: #fbbf24;
-    --accent-foreground: #451a03;
-    --card: #1c1917;
-    --card-foreground: #f5f5f4;
-    --destructive: #991b1b;
-    --destructive-foreground: #fef2f2;
-    --destructive-border: #fecaca;
-    --destructive-bg: #fff1f2;
+:root[data-theme='dark'] {
+  --background: #0c0a09;
+  --foreground: #f5f5f4;
+  --primary: #4ade80;
+  --primary-foreground: #052e16;
+  --accent: #fbbf24;
+  --accent-foreground: #451a03;
+  --card: #1c1917;
+  --card-foreground: #f5f5f4;
+  --destructive: #991b1b;
+  --destructive-foreground: #fef2f2;
+  --destructive-border: #fecaca;
+  --destructive-bg: #fff1f2;
 
-    --radius: 0.5rem;
-    --muted: #292524;
-    --muted-foreground: #a8a29e;
-    --border: #44403c;
-  }
+  --radius: 0.5rem;
+  --muted: #292524;
+  --muted-foreground: #a8a29e;
+  --border: #44403c;
+  --background-overlay: rgba(12, 10, 9, 0.85);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .pixel-font {
