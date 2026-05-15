@@ -46,3 +46,4 @@ AGENTS.md
 project-docs/
 MAJI-Skills/
 tasks/
+.env*.local
