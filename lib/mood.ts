@@ -90,12 +90,19 @@ export const MOODS: MoodDefinition[] = [
   }
 ];
 
+export const DECAY_MESSAGES = {
+  severe: "My shell is getting dusty... I'm feeling a bit weak. Shall we run?",
+  moderate: "It's been a few days. I missed our training sessions!"
+};
+
 /**
  * Gets the current mood definition based on current streak.
  */
 export function getMood(streak: number): MoodDefinition {
-  // Find the highest mood that matches the current streak
-  return [...MOODS].reverse().find(m => streak >= m.minStreak) || MOODS[0];
+  for (let i = MOODS.length - 1; i >= 0; i--) {
+    if (streak >= MOODS[i].minStreak) return MOODS[i];
+  }
+  return MOODS[0];
 }
 
 /**
@@ -103,10 +110,10 @@ export function getMood(streak: number): MoodDefinition {
  */
 export function getNarrativeStatus(streak: number, daysSinceLastRun: number): string {
   if (daysSinceLastRun > 5) {
-    return "My shell is getting dusty... I'm feeling a bit weak. Shall we run?";
+    return DECAY_MESSAGES.severe;
   }
   if (daysSinceLastRun > 2) {
-    return "It's been a few days. I missed our training sessions!";
+    return DECAY_MESSAGES.moderate;
   }
 
   const mood = getMood(streak);
