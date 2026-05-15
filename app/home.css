@@ -13,7 +13,7 @@
 
   /* Full-bleed background image */
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.6)),
+    linear-gradient(var(--background-overlay), color-mix(in srgb, var(--background-overlay), black 10%)),
     url('/homepage.png');
   background-size: cover;
   background-position: center;
@@ -51,7 +51,7 @@
   font-family: var(--font-pixel);
   letter-spacing: -0.04em;
   line-height: 1;
-  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), black 50%);
+  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), transparent 75%);
 }
 
 /* ─── Subtitle ─── */
@@ -84,7 +84,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--foreground), transparent 45%);
   font-family: var(--font-pixel);
   font-size: 0.6rem;
 }

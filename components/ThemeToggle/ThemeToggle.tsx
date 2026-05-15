@@ -7,8 +7,7 @@ export default function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Sync with the attribute set by the blocking script
-    const currentTheme = document.documentElement.getAttribute("data-theme") as "light" | "dark";
+    const currentTheme = document.documentElement.getAttribute("data-theme") as "light" | "dark" | null;
     if (currentTheme) {
       setTheme(currentTheme);
     }
@@ -21,14 +20,20 @@ export default function ThemeToggle() {
     localStorage.setItem("theme", newTheme);
   };
 
+  const nextTheme = theme === "light" ? "dark" : "light";
+  const icon = theme === "light" ? "☀" : "☾";
+
   return (
     <button
       onClick={toggleTheme}
       className="theme-toggle-btn"
-      title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+      data-theme-mode={theme}
+      title={`Switch to ${nextTheme} mode`}
       aria-label="Toggle Theme"
     >
-      {theme === "light" ? "🌙" : "☀️"}
+      <span className="theme-toggle-icon" aria-hidden="true">
+        {icon}
+      </span>
     </button>
   );
 }

@@ -13,7 +13,7 @@
 
   /* Full-bleed background image — same as home */
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.65)),
+    linear-gradient(var(--background-overlay), color-mix(in srgb, var(--background-overlay), black 10%)),
     url('/homepage.png');
   background-size: cover;
   background-position: center;
@@ -29,9 +29,9 @@
   max-width: 28rem;
   padding: clamp(2rem, 6vw, 3rem);
   background-color: var(--card);
-  border: 4px solid var(--primary);
+  border: 4px solid var(--primary-border);
   border-radius: 1rem;
-  box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 8px 8px 0px 0px color-mix(in srgb, var(--primary), black 82%);
   animation: slideUp 0.4s ease-out;
 }
 
@@ -39,11 +39,11 @@
 .login-title {
   font-size: clamp(2rem, 8vw, 3rem);
   font-weight: 900;
-  color: #fff;
+  color: var(--primary);
   font-family: var(--font-pixel);
   text-align: center;
   letter-spacing: -0.05em;
-  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), black 40%);
+  text-shadow: 4px 4px 0px color-mix(in srgb, var(--primary), transparent 75%);
   margin-bottom: 1.5rem;
 }
 
@@ -92,7 +92,7 @@
   padding: 0.875rem 1rem;
   border: 2px solid var(--border);
   border-radius: 0.75rem;
-  background-color: var(--background);
+  background-color: color-mix(in srgb, var(--background), white 25%);
   color: var(--foreground);
   font-size: 1rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -242,7 +242,7 @@
   left: 0;
   right: 0;
   text-align: center;
-  color: rgba(255, 255, 255, 0.35);
+  color: color-mix(in srgb, var(--foreground), transparent 45%);
   font-family: var(--font-pixel);
   font-size: 0.6rem;
 }
