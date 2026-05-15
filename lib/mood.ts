@@ -1,14 +1,14 @@
 /**
  * mood.ts — Kura's Emotional Engine
- * Maps endurance and activity levels to visual states and personality.
+ * Maps streak (short-term consistency) to visual states and personality.
+ * Endurance (long-term growth) is handled by the Evolution/Narrative system.
  */
 
 export type MoodType = "weak" | "trying" | "runner" | "elite";
 
 export interface MoodDefinition {
   type: MoodType;
-  min: number;
-  max: number;
+  minStreak: number;
   sprite: string;
   label: string;
   idleMessages: string[];
@@ -18,10 +18,9 @@ export interface MoodDefinition {
 export const MOODS: MoodDefinition[] = [
   {
     type: "weak",
-    min: 0,
-    max: 5,
+    minStreak: 0,
     sprite: "/kura-weak.png",
-    label: "Baby Steps",
+    label: "Lazy & Sleepy",
     idleMessages: [
       "I'm so sleepy...",
       "My shell feels heavy today.",
@@ -37,10 +36,9 @@ export const MOODS: MoodDefinition[] = [
   },
   {
     type: "trying",
-    min: 5,
-    max: 10,
+    minStreak: 1,
     sprite: "/kura-trying.png",
-    label: "Determined",
+    label: "Getting Started",
     idleMessages: [
       "I'm getting the hang of this!",
       "One step at a time.",
@@ -56,10 +54,9 @@ export const MOODS: MoodDefinition[] = [
   },
   {
     type: "runner",
-    min: 10,
-    max: 21,
+    minStreak: 3,
     sprite: "/kura-runner.png",
-    label: "Athlete",
+    label: "In the Zone",
     idleMessages: [
       "I love the wind in my face!",
       "We're a great team, aren't we?",
@@ -75,10 +72,9 @@ export const MOODS: MoodDefinition[] = [
   },
   {
     type: "elite",
-    min: 21,
-    max: 100, // Up to 42 and beyond
+    minStreak: 6,
     sprite: "/kura-elite.png",
-    label: "Champion",
+    label: "Unstoppable",
     idleMessages: [
       "Nothing can stop us now!",
       "I'm ready for a marathon.",
@@ -95,16 +91,17 @@ export const MOODS: MoodDefinition[] = [
 ];
 
 /**
- * Gets the current mood definition based on endurance km.
+ * Gets the current mood definition based on current streak.
  */
-export function getMood(endurance: number): MoodDefinition {
-  return MOODS.find(m => endurance >= m.min && endurance < m.max) || MOODS[0];
+export function getMood(streak: number): MoodDefinition {
+  // Find the highest mood that matches the current streak
+  return [...MOODS].reverse().find(m => streak >= m.minStreak) || MOODS[0];
 }
 
 /**
  * Gets a narrative status message based on mood and inactivity.
  */
-export function getNarrativeStatus(endurance: number, daysSinceLastRun: number): string {
+export function getNarrativeStatus(streak: number, daysSinceLastRun: number): string {
   if (daysSinceLastRun > 5) {
     return "My shell is getting dusty... I'm feeling a bit weak. Shall we run?";
   }
@@ -112,7 +109,8 @@ export function getNarrativeStatus(endurance: number, daysSinceLastRun: number):
     return "It's been a few days. I missed our training sessions!";
   }
 
-  const mood = getMood(endurance);
+  const mood = getMood(streak);
   // Pick a random idle message
   return mood.idleMessages[Math.floor(Math.random() * mood.idleMessages.length)];
 }
+

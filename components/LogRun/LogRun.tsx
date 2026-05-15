@@ -14,11 +14,12 @@ import "./LogRun.css";
 
 interface LogRunProps {
   currentEndurance: number;
-  onLogSuccess: (newEndurance: number) => void;
+  currentStreak: number;
+  onLogSuccess: (newEndurance: number, newStreak: number) => void;
   refreshKey?: number;
 }
 
-export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: LogRunProps) {
+export default function LogRun({ currentEndurance, currentStreak, onLogSuccess, refreshKey }: LogRunProps) {
   const [distance, setDistance] = useState("");
   const [time, setTime] = useState(""); // User's actual time
   const [error, setError] = useState("");
@@ -97,11 +98,16 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
       });
       if (runError) throw runError;
 
-      // 3. Update Kura's Current Endurance
+      // 3. Update Kura's Current Endurance & Streak
       const newEndurance = improveEndurance(currentEndurance);
+      const newStreak = currentStreak + 1;
+
       const { error: profileError } = await supabase
         .from("profiles")
-        .update({ kura_endurance: newEndurance })
+        .update({ 
+          kura_endurance: newEndurance,
+          streak: newStreak
+        })
         .eq("id", user.id);
 
       if (profileError) throw profileError;
@@ -109,7 +115,7 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
       // 4. Success
       setIsSuccess(true);
       setHasLoggedToday(true);
-      onLogSuccess(newEndurance);
+      onLogSuccess(newEndurance, newStreak);
     } catch (err: any) {
       setError(err.message || "Failed to log run.");
     } finally {
@@ -126,7 +132,7 @@ export default function LogRun({ currentEndurance, onLogSuccess, refreshKey }: L
   }
 
   if (isSuccess) {
-    const mood = getMood(currentEndurance);
+    const mood = getMood(currentStreak);
     const message = mood.successMessages[Math.floor(Math.random() * mood.successMessages.length)];
 
     return (

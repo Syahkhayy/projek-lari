@@ -18,6 +18,7 @@ import "./stylesheet.css";
 export default function DashboardPage() {
   const router = useRouter();
   const [currentEndurance, setCurrentEndurance] = useState(ENDURANCE_DEFAULT);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -39,10 +40,10 @@ export default function DashboardPage() {
         return;
       }
 
-      // 1. Fetch current endurance and onboarding status from profile
+      // 1. Fetch current endurance, streak, and onboarding status from profile
       let { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select("kura_endurance, has_seen_onboarding")
+        .select("kura_endurance, streak, has_seen_onboarding")
         .eq("id", user.id)
         .single();
 
@@ -64,6 +65,7 @@ export default function DashboardPage() {
       }
 
       let finalEndurance = profile.kura_endurance;
+      let finalStreak = profile.streak || 0;
 
       // 2. Check for Decay
       const { data: lastRun } = await supabase
@@ -77,22 +79,41 @@ export default function DashboardPage() {
         const daysPassed = daysSince(lastRun[0].created_at);
         setDaysSinceLastRun(daysPassed);
 
-        // Only decay after 3 days of no running
+        let updates: any = {};
+
+        // --- Endurance Decay (After 2 days) ---
         if (daysPassed > 2) {
           const decayedEndurance = applyDecay(profile.kura_endurance, daysPassed);
-
-          // If endurance changed, update the DB
           if (decayedEndurance !== profile.kura_endurance) {
-            await supabase
-              .from("profiles")
-              .update({ kura_endurance: decayedEndurance })
-              .eq("id", user.id);
+            updates.kura_endurance = decayedEndurance;
             finalEndurance = decayedEndurance;
           }
+        }
+
+        // --- Streak Decay (Soft reset: -1 for every missed day) ---
+        // daysPassed = 1 means they ran yesterday (no decay)
+        // daysPassed = 2 means they missed 1 day (streak - 1)
+        if (daysPassed > 1) {
+          const missedDays = daysPassed - 1;
+          const decayedStreak = Math.max(0, (profile.streak || 0) - missedDays);
+          
+          if (decayedStreak !== (profile.streak || 0)) {
+            updates.streak = decayedStreak;
+            finalStreak = decayedStreak;
+          }
+        }
+
+        // Batch update if anything changed
+        if (Object.keys(updates).length > 0) {
+          await supabase
+            .from("profiles")
+            .update(updates)
+            .eq("id", user.id);
         }
       }
 
       setCurrentEndurance(finalEndurance);
+      setCurrentStreak(finalStreak);
     } catch (err) {
       console.error("Error fetching user data:", err);
     } finally {
@@ -100,8 +121,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogSuccess = (newEndurance: number) => {
+  const handleLogSuccess = (newEndurance: number, newStreak?: number) => {
     setCurrentEndurance(newEndurance);
+    if (newStreak !== undefined) setCurrentStreak(newStreak);
     setRefreshKey(prev => prev + 1); // Trigger RunList refresh
   };
 
@@ -199,8 +221,8 @@ export default function DashboardPage() {
   // Derived values from the endurance engine
   const enduranceDisplay = formatEndurance(currentEndurance);
   const progress = getEnduranceProgress(currentEndurance);
-  const statusMessage = getNarrativeStatus(currentEndurance, daysSinceLastRun);
-  const mood = getMood(currentEndurance);
+  const statusMessage = getNarrativeStatus(currentStreak, daysSinceLastRun);
+  const mood = getMood(currentStreak);
 
   return (
     <div className={`dashboard-layout ${isMobileMenuOpen ? "mobile-menu-open" : ""}`}>
@@ -320,6 +342,7 @@ export default function DashboardPage() {
           <section className="action-area">
             <LogRun
               currentEndurance={currentEndurance}
+              currentStreak={currentStreak}
               onLogSuccess={handleLogSuccess}
               refreshKey={refreshKey}
             />
@@ -335,7 +358,7 @@ export default function DashboardPage() {
           }}
         />
 
-        <Mascot endurance={currentEndurance} daysSinceLastRun={daysSinceLastRun} />
+        <Mascot endurance={currentEndurance} daysSinceLastRun={daysSinceLastRun} streak={currentStreak} />
 
         <ComicModal 
           isOpen={showComic}

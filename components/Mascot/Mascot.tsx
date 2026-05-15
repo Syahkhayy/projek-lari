@@ -8,9 +8,10 @@ import { getMood } from "@/lib/mood";
 interface MascotProps {
   endurance: number;
   daysSinceLastRun: number;
+  streak: number;
 }
 
-export default function Mascot({ endurance, daysSinceLastRun }: MascotProps) {
+export default function Mascot({ endurance, daysSinceLastRun, streak }: MascotProps) {
   const [pos, setPos] = useState({ x: 100, y: 0 });
   const [vel, setVel] = useState({ x: 0.5, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -112,14 +113,14 @@ export default function Mascot({ endurance, daysSinceLastRun }: MascotProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isDragging && Math.random() > 0.7) {
-        const mood = getMood(endurance);
+        const mood = getMood(streak);
         const pool = mood.idleMessages;
         setMessage(pool[Math.floor(Math.random() * pool.length)]);
         setTimeout(() => setMessage(""), 3000);
       }
     }, 6000);
     return () => clearInterval(interval);
-  }, [isDragging, endurance]);
+  }, [isDragging, streak]);
 
   return (
     <div
@@ -134,7 +135,7 @@ export default function Mascot({ endurance, daysSinceLastRun }: MascotProps) {
     >
       {message && <div className="speech-bubble">{message}</div>}
       <img
-        src={getMood(endurance).sprite}
+        src={getMood(streak).sprite}
         alt="Kura Mascot"
         className={`mascot-sprite ${isFlipped ? "turtle-flipped" : ""}`}
         draggable={false}
