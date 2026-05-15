@@ -1,0 +1,38 @@
+.theme-toggle-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  padding: 0;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: 3px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-pixel);
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar Specific */
+.sidebar-action-item.theme-toggle-wrapper {
+  justify-content: space-between;
+  padding-right: 1rem;
+}
+
+.sidebar-theme-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

@@ -12,6 +12,7 @@ import RunList from "@/components/RunList/RunList";
 import OnboardingModal from "@/components/OnboardingModal/OnboardingModal";
 import ComicModal from "@/components/ComicModal/ComicModal";
 import LoreSection from "@/components/LoreSection/LoreSection";
+import ThemeToggle from "@/components/ThemeToggle/ThemeToggle";
 import "./stylesheet.css";
 
 export default function DashboardPage() {
@@ -240,6 +241,7 @@ export default function DashboardPage() {
             >
               ?
             </button>
+            <ThemeToggle />
             <button onClick={() => handleLogout()} className="pixel-btn logout-btn">
               LOGOUT
             </button>
@@ -266,6 +268,12 @@ export default function DashboardPage() {
               >
                 <span className="icon">?</span> HOW IT WORKS
               </button>
+              <div className="sidebar-action-item theme-toggle-wrapper">
+                <div className="sidebar-theme-label">
+                  <span className="icon">🌓</span> THEME
+                </div>
+                <ThemeToggle />
+              </div>
               <div className="sidebar-divider"></div>
               <button 
                 onClick={() => handleLogout()} 
